@@ -9,6 +9,11 @@ public class Task {
     private LocalDateTime deadline;
 
     public Task(String name, String description, LocalDateTime deadline) {
+
+        if(name.isBlank()){
+            throw new IllegalArgumentException("Cannot create task with blank title");
+        }
+
         this.name = name;
         this.description = description;
         this.deadline = deadline;
