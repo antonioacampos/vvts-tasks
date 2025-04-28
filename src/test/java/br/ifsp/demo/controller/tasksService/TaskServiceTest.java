@@ -1,5 +1,7 @@
 package br.ifsp.demo.controller.tasksService;
 
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -11,6 +13,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class TaskServiceTest {
 
     @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
     void ShouldCreateNewTaskWithInformedData() {
         //C02/US001
         TaskService taskService = new TaskService();
