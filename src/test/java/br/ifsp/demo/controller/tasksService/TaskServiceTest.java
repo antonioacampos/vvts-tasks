@@ -1,5 +1,6 @@
 package br.ifsp.demo.controller.tasksService;
 
+import jdk.jfr.Description;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ class TaskServiceTest {
     @Test
     @Tag("@TDD")
     @Tag("@UnitTest")
+    @Description("Should create new task with informed data")
     void ShouldCreateNewTaskWithInformedData() {
         //C02/US001
         TaskService taskService = new TaskService();
@@ -32,6 +34,7 @@ class TaskServiceTest {
     @Test
     @Tag("@TDD")
     @Tag("@UnitTest")
+    @Description("Should not create task with blank title")
     void ShouldNotCreateTaskWithBlankTitle() {
         //C01/US001
         TaskService taskService = new TaskService();
