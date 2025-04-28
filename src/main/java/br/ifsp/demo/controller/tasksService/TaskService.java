@@ -8,4 +8,11 @@ public class TaskService {
         return new Task(name, description, deadline);
     }
 
+    public Task editTask(Task task, String anotherName, String anotherDescription, LocalDateTime localDateTime) {
+        task.setName(anotherName);
+        task.setDescription(anotherDescription);
+        task.setDeadline(localDateTime);
+
+        return task;
+    }
 }
