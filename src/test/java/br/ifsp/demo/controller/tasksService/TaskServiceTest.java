@@ -52,10 +52,29 @@ class TaskServiceTest {
     void ShouldNotCreateTaskWithOutdatedDeadline() {
         //C03/US001
         TaskService taskService =  new TaskService();
-        LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
+        LocalDateTime dateTime = LocalDateTime.now().minusHours(1);
 
         assertThatThrownBy(() -> taskService.createTask("Name", "Description", dateTime))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cannot create task with outdated deadline");
+    }
+    @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
+    @Description("Should be able to edit tasks")
+    void ShouldBeAbleToEditTasks() {
+        //C02/US002
+
+        TaskService taskService = new TaskService();
+        LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
+
+        Task task = taskService.createTask("Name", "Description", dateTime);
+
+        Task modTask = taskService.editTask(task, "Another name", "Another Description", dateTime.plusHours(5));
+
+        assertThat(modTask.getName()).isEqualTo("Another name");
+        assertThat(modTask.getDescription()).isEqualTo("Another Description");
+        assertThat(modTask.getDeadline()).isEqualTo(dateTime.plusHours(5));
+
     }
 }
