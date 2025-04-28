@@ -10,9 +10,9 @@ public class Task {
 
     public Task(String name, String description, LocalDateTime deadline) {
 
-        if(name.isBlank()){
-            throw new IllegalArgumentException("Cannot create task with blank title");
-        }
+        if(name.isBlank()) throw new IllegalArgumentException("Cannot create task with blank title");
+
+        if(deadline.isBefore(LocalDateTime.now())) throw new IllegalArgumentException("Cannot create task with outdated deadline");
 
         this.name = name;
         this.description = description;
