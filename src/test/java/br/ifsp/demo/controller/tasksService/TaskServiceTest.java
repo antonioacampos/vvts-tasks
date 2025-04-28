@@ -58,6 +58,7 @@ class TaskServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cannot create task with outdated deadline");
     }
+
     @Test
     @Tag("@TDD")
     @Tag("@UnitTest")
@@ -75,6 +76,26 @@ class TaskServiceTest {
         assertThat(modTask.getName()).isEqualTo("Another name");
         assertThat(modTask.getDescription()).isEqualTo("Another Description");
         assertThat(modTask.getDeadline()).isEqualTo(dateTime.plusHours(5));
+
+    }
+
+    @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
+    @Description("Should not be able to edit with the same check as creating")
+    void ShouldNotBeAbleToEditWithTheSameCheckAsCreating() {
+        TaskService taskService = new TaskService();
+        LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
+
+        Task task = taskService.createTask("Name", "Description", dateTime);
+
+        assertThatThrownBy(() -> taskService.editTask(task, task.getName(), task.getDescription(), dateTime.minusHours(20)))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Cannot edit task with outdated deadline");
+
+        assertThatThrownBy(() -> taskService.editTask(task, " ", task.getDescription(), task.getDeadline()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Cannot edit task with blank title");
 
     }
 }
