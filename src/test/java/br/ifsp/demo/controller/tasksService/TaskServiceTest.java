@@ -38,7 +38,7 @@ class TaskServiceTest {
     void ShouldNotCreateTaskWithBlankTitle() {
         //C01/US001
         TaskService taskService = new TaskService();
-        LocalDateTime dateTime = LocalDateTime.of(2025, 5, 28, 10, 40);
+        LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
 
         assertThatThrownBy(() -> taskService.createTask(" ", "Description", dateTime))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -52,12 +52,10 @@ class TaskServiceTest {
     void ShouldNotCreateTaskWithOutdatedDeadline() {
         //C03/US001
         TaskService taskService =  new TaskService();
-        LocalDateTime dateTime = LocalDateTime.of(2000, 1, 28, 10, 40);
+        LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
 
         assertThatThrownBy(() -> taskService.createTask("Name", "Description", dateTime))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cannot create task with outdated deadline");
     }
-
-
 }
