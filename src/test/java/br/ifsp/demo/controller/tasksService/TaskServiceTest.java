@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 
@@ -26,6 +27,19 @@ class TaskServiceTest {
         assertThat(task.getName()).isEqualTo("Name");
         assertThat(task.getDescription()).isEqualTo("Description");
         assertThat(task.getDeadline()).isEqualTo(dateTime);
+    }
+
+    @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
+    void ShouldNotCreateTaskWithBlankTitle() {
+        //C01/US001
+        TaskService taskService = new TaskService();
+        LocalDateTime dateTime = LocalDateTime.of(2025, 5, 28, 10, 40);
+
+        assertThatThrownBy(() -> taskService.createTask(" ", "Description", dateTime))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Cannot create task with blank title");
     }
 
 }
