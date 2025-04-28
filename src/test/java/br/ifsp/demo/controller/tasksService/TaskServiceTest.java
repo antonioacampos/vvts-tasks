@@ -45,4 +45,19 @@ class TaskServiceTest {
                 .hasMessage("Cannot create task with blank title");
     }
 
+    @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
+    @Description("Should not create task with outdated deadline")
+    void ShouldNotCreateTaskWithOutdatedDeadline() {
+        //C03/US001
+        TaskService taskService =  new TaskService();
+        LocalDateTime dateTime = LocalDateTime.of(2000, 1, 28, 10, 40);
+
+        assertThatThrownBy(() -> taskService.createTask("Name", "Description", dateTime))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Cannot create task with outdated deadline");
+    }
+
+
 }
