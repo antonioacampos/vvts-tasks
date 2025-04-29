@@ -69,7 +69,7 @@ class TaskServiceTest {
 
         Task task = taskService.createTask("Name", "Description", dateTime);
 
-        Task modTask = taskService.editTask(task, "Another name", "Another Description", dateTime.plusHours(5));
+        Task modTask = taskService.editTask(0, "Another name", "Another Description", dateTime.plusHours(5));
 
         assertThat(modTask.getTitle()).isEqualTo("Another name");
         assertThat(modTask.getDescription()).isEqualTo("Another Description");
@@ -88,11 +88,11 @@ class TaskServiceTest {
 
         Task task = taskService.createTask("Name", "Description", dateTime);
 
-        assertThatThrownBy(() -> taskService.editTask(task, task.getTitle(), task.getDescription(), dateTime.minusHours(20)))
+        assertThatThrownBy(() -> taskService.editTask(0, task.getTitle(), task.getDescription(), dateTime.minusHours(20)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cannot edit task with outdated deadline");
 
-        assertThatThrownBy(() -> taskService.editTask(task, " ", task.getDescription(), task.getDeadline()))
+        assertThatThrownBy(() -> taskService.editTask(0, " ", task.getDescription(), task.getDeadline()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cannot edit task with blank title");
     }
