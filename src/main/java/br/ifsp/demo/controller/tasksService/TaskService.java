@@ -32,4 +32,9 @@ public class TaskService {
                 .map(Task::toString)
                 .collect(Collectors.joining("\n"));
     }
+
+    public void deleteTask(int index) {
+        if (index > tasks.size()) throw new IndexOutOfBoundsException("Index out of bounds");
+        tasks.remove(index);
+    }
 }
