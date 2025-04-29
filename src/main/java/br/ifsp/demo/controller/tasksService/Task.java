@@ -32,6 +32,7 @@ public class Task {
     }
 
     public void setName(String name) {
+        if(name.isBlank()) throw new IllegalArgumentException("Cannot edit task with blank title");
         this.name = name;
     }
 
@@ -40,6 +41,7 @@ public class Task {
     }
 
     public void setDeadline(LocalDateTime deadline) {
+        if(deadline.isBefore(LocalDateTime.now())) throw new IllegalArgumentException("Cannot edit task with outdated deadline");
         this.deadline = deadline;
     }
 }
