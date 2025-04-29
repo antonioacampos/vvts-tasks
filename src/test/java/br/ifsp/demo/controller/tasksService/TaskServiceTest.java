@@ -96,4 +96,22 @@ class TaskServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cannot edit task with blank title");
     }
+
+    @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
+    @Description("Should give exception if index out of bounds")
+    void ShouldGiveExceptionIfIndexOutOfBounds() {
+        //C03/US002
+
+        TaskService taskService = new TaskService();
+        LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
+
+        Task task = taskService.createTask("Name", "Description", dateTime);
+
+        assertThatThrownBy(() -> taskService.editTask(20, task.getTitle(), task.getDescription(), task.getDeadline()))
+                .isInstanceOf(IndexOutOfBoundsException.class)
+                .hasMessage("Index out of bounds");
+
+    }
 }
