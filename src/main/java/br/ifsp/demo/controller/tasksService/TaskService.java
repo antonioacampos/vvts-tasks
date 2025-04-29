@@ -16,7 +16,7 @@ public class TaskService {
     }
 
     public Task editTask(int index, String anotherName, String anotherDescription, LocalDateTime localDateTime) {
-        if (index > tasks.size()) throw new IndexOutOfBoundsException("Index out of bounds");
+        if (index >= tasks.size() || index < 0) throw new IndexOutOfBoundsException("Index out of bounds");
 
         Task task = tasks.get(index);
 
@@ -34,7 +34,7 @@ public class TaskService {
     }
 
     public void deleteTask(int index) {
-        if (index > tasks.size()) throw new IndexOutOfBoundsException("Index out of bounds");
+        if (index >= tasks.size() || index < 0) throw new IndexOutOfBoundsException("Index out of bounds");
         tasks.remove(index);
     }
 }
