@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -112,6 +113,38 @@ class TaskServiceTest {
         assertThatThrownBy(() -> taskService.editTask(20, task.getTitle(), task.getDescription(), task.getDeadline()))
                 .isInstanceOf(IndexOutOfBoundsException.class)
                 .hasMessage("Index out of bounds");
+    }
 
+    @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
+    @Description("Should return information of all registered tasks")
+    void ShouldReturnInformationOfAllRegisteredTasks() {
+
+        TaskService taskService = new TaskService();
+        LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
+
+        taskService.createTask("Name 1", "Description", dateTime);
+        taskService.createTask("Another name", "This Description", dateTime);
+
+        String information = taskService.getAllInformation();
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        String expected = String.format("{\n" +
+                "  \"title\": \"Do homework\",\n" +
+                "  \"description\": \"Math exercises\",\n" +
+                "  \"dateTime\": \"%s\"\n" +
+                "}\n" +
+                "{\n" +
+                "  \"title\": \"Do homework\",\n" +
+                "  \"description\": \"Math exercises\",\n" +
+                "  \"dateTime\": \"%s\"\n" +
+                "}",
+                dateTime.format(formatter),
+                dateTime.format(formatter)
+                );
+
+        assertThat(information).isEqualTo(expected);
     }
 }
