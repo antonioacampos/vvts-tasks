@@ -9,7 +9,7 @@ public class TaskService {
     }
 
     public Task editTask(Task task, String anotherName, String anotherDescription, LocalDateTime localDateTime) {
-        task.setName(anotherName);
+        task.setTitle(anotherName);
         task.setDescription(anotherDescription);
         task.setDeadline(localDateTime);
 

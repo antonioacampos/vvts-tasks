@@ -2,14 +2,12 @@ package br.ifsp.demo.controller.tasksService;
 
 import jdk.jfr.Description;
 import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Tags;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 
 class TaskServiceTest {
@@ -26,7 +24,7 @@ class TaskServiceTest {
 
         Task task = taskService.createTask("Name", "Description", dateTime);
 
-        assertThat(task.getName()).isEqualTo("Name");
+        assertThat(task.getTitle()).isEqualTo("Name");
         assertThat(task.getDescription()).isEqualTo("Description");
         assertThat(task.getDeadline()).isEqualTo(dateTime);
     }
@@ -73,7 +71,7 @@ class TaskServiceTest {
 
         Task modTask = taskService.editTask(task, "Another name", "Another Description", dateTime.plusHours(5));
 
-        assertThat(modTask.getName()).isEqualTo("Another name");
+        assertThat(modTask.getTitle()).isEqualTo("Another name");
         assertThat(modTask.getDescription()).isEqualTo("Another Description");
         assertThat(modTask.getDeadline()).isEqualTo(dateTime.plusHours(5));
 
@@ -84,18 +82,18 @@ class TaskServiceTest {
     @Tag("@UnitTest")
     @Description("Should not be able to edit with the same check as creating")
     void ShouldNotBeAbleToEditWithTheSameCheckAsCreating() {
+        //C01/US002
         TaskService taskService = new TaskService();
         LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
 
         Task task = taskService.createTask("Name", "Description", dateTime);
 
-        assertThatThrownBy(() -> taskService.editTask(task, task.getName(), task.getDescription(), dateTime.minusHours(20)))
+        assertThatThrownBy(() -> taskService.editTask(task, task.getTitle(), task.getDescription(), dateTime.minusHours(20)))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cannot edit task with outdated deadline");
 
         assertThatThrownBy(() -> taskService.editTask(task, " ", task.getDescription(), task.getDeadline()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cannot edit task with blank title");
-
     }
 }

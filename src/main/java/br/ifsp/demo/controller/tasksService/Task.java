@@ -4,23 +4,23 @@ import java.time.LocalDateTime;
 
 public class Task {
 
-    private String name;
+    private String title;
     private String description;
     private LocalDateTime deadline;
 
-    public Task(String name, String description, LocalDateTime deadline) {
+    public Task(String title, String description, LocalDateTime deadline) {
 
-        if(name.isBlank()) throw new IllegalArgumentException("Cannot create task with blank title");
+        if(title.isBlank()) throw new IllegalArgumentException("Cannot create task with blank title");
 
         if(deadline.isBefore(LocalDateTime.now())) throw new IllegalArgumentException("Cannot create task with outdated deadline");
 
-        this.name = name;
+        this.title = title;
         this.description = description;
         this.deadline = deadline;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public String getDescription() {
@@ -31,9 +31,9 @@ public class Task {
         return deadline;
     }
 
-    public void setName(String name) {
-        if(name.isBlank()) throw new IllegalArgumentException("Cannot edit task with blank title");
-        this.name = name;
+    public void setTitle(String title) {
+        if(title.isBlank()) throw new IllegalArgumentException("Cannot edit task with blank title");
+        this.title = title;
     }
 
     public void setDescription(String description) {
