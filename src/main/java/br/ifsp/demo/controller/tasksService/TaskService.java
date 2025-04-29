@@ -3,6 +3,7 @@ package br.ifsp.demo.controller.tasksService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TaskService {
 
@@ -15,7 +16,7 @@ public class TaskService {
     }
 
     public Task editTask(int index, String anotherName, String anotherDescription, LocalDateTime localDateTime) {
-        if(index > tasks.size()) throw new IndexOutOfBoundsException("Index out of bounds");
+        if (index > tasks.size()) throw new IndexOutOfBoundsException("Index out of bounds");
 
         Task task = tasks.get(index);
 
@@ -24,5 +25,11 @@ public class TaskService {
         task.setDeadline(localDateTime);
 
         return task;
+    }
+
+    public String getAllInformation() {
+        return tasks.stream()
+                .map(Task::toString)
+                .collect(Collectors.joining("\n"));
     }
 }

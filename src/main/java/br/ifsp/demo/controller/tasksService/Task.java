@@ -1,6 +1,7 @@
 package br.ifsp.demo.controller.tasksService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Task {
 
@@ -43,5 +44,17 @@ public class Task {
     public void setDeadline(LocalDateTime deadline) {
         if(deadline.isBefore(LocalDateTime.now())) throw new IllegalArgumentException("Cannot edit task with outdated deadline");
         this.deadline = deadline;
+    }
+
+    @Override
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
+        return String.format(
+                "{\n  \"title\": \"%s\",\n  \"description\": \"%s\",\n  \"deadline\": \"%s\"\n}",
+                this.title,
+                this.description,
+                this.deadline.format(formatter)
+        );
     }
 }

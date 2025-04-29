@@ -132,14 +132,14 @@ class TaskServiceTest {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
         String expected = String.format("{\n" +
-                "  \"title\": \"Do homework\",\n" +
-                "  \"description\": \"Math exercises\",\n" +
-                "  \"dateTime\": \"%s\"\n" +
+                "  \"title\": \"Name 1\",\n" +
+                "  \"description\": \"Description\",\n" +
+                "  \"deadline\": \"%s\"\n" +
                 "}\n" +
                 "{\n" +
-                "  \"title\": \"Do homework\",\n" +
-                "  \"description\": \"Math exercises\",\n" +
-                "  \"dateTime\": \"%s\"\n" +
+                "  \"title\": \"Another name\",\n" +
+                "  \"description\": \"This Description\",\n" +
+                "  \"deadline\": \"%s\"\n" +
                 "}",
                 dateTime.format(formatter),
                 dateTime.format(formatter)
