@@ -147,4 +147,20 @@ class TaskServiceTest {
 
         assertThat(information).isEqualTo(expected);
     }
+
+    @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
+    @Description("Should delete a task")
+    void ShouldDeleteATask() {
+        TaskService taskService = new TaskService();
+        LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
+
+        taskService.createTask("Name 1", "Description", dateTime);
+        taskService.deleteTask(0);
+
+        String information = taskService.getAllInformation();
+
+        assertThat(information).isEqualTo("");
+    }
 }
