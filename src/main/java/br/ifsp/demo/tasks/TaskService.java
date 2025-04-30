@@ -36,4 +36,12 @@ public class TaskService {
         if (index >= tasks.size() || index < 0) throw new IndexOutOfBoundsException("Index out of bounds");
         tasks.remove(index);
     }
+
+    public Task getTask(int index) {
+        if (index < 0 || index >= tasks.size()) {
+            throw new IndexOutOfBoundsException("Task not found");
+        }
+        return tasks.get(index);
+    }
+    
 }
