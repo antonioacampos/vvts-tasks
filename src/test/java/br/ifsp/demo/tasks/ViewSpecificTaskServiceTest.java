@@ -1,7 +1,5 @@
-package br.ifsp.demo.tasks.service;
+package br.ifsp.demo.tasks;
 
-import br.ifsp.demo.tasks.Task;
-import br.ifsp.demo.tasks.TaskService;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import jdk.jfr.Description;

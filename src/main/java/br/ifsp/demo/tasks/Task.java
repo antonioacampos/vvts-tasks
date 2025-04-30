@@ -56,4 +56,20 @@ public class Task {
                 this.deadline.format(formatter)
         );
     }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+    
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
+    
+    public void markAsCompleted() {
+        if (this.status != TaskStatus.IN_PROGRESS) {
+            throw new IllegalStateException("Task must be in progress to be marked as completed");
+        }
+        this.status = TaskStatus.COMPLETED;
+    }
+    
 }

@@ -43,5 +43,14 @@ public class TaskService {
         }
         return tasks.get(index);
     }
+
+    public void markAsCompleted(int index) {
+        if (index < 0 || index >= tasks.size()) {
+            throw new IndexOutOfBoundsException("Task not found");
+        }
+    
+        Task task = tasks.get(index);
+        task.markAsCompleted();
+    }    
     
 }
