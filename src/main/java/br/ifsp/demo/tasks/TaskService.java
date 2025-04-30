@@ -65,4 +65,13 @@ public class TaskService {
                 .filter(t -> t.getStatus() == status)
                 .collect(Collectors.toList());
     }    
+
+    public void clockIn(int index) {
+        if (index < 0 || index >= tasks.size()) {
+            throw new IndexOutOfBoundsException("Task not found");
+        }
+        Task task = tasks.get(index);
+        task.clockIn();
+    }
+    
 }
