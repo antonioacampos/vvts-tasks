@@ -52,5 +52,17 @@ public class TaskService {
         Task task = tasks.get(index);
         task.markAsCompleted();
     }    
+
+    public List<Task> filterByStatus(String statusString) {
+        TaskStatus status;
+        try {
+            status = TaskStatus.valueOf(statusString.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid status: " + statusString);
+        }
     
+        return tasks.stream()
+                .filter(t -> t.getStatus() == status)
+                .collect(Collectors.toList());
+    }    
 }
