@@ -7,6 +7,7 @@ public class Task {
     private String title;
     private String description;
     private LocalDateTime deadline;
+    private TaskStatus status = TaskStatus.PENDING;
 
     public Task(String title, String description, LocalDateTime deadline) {
 
