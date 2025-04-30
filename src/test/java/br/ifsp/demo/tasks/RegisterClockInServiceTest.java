@@ -13,7 +13,7 @@ public class RegisterClockInServiceTest {
     @Test
     @Tag("@TDD")
     @Tag("@UnitTest")
-    @Description("C02/US008 – Should register clock-in and update task status to IN_PROGRESS")
+    @Description("C02/US008 - Should register clock-in and update task status to IN_PROGRESS")
     void shouldRegisterClockInAndUpdateStatus() {
         TaskService taskService = new TaskService();
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
@@ -24,5 +24,21 @@ public class RegisterClockInServiceTest {
 
         assertThat(task.getStatus()).isEqualTo(TaskStatus.IN_PROGRESS);
         assertThat(task.getStartTime()).isNotNull();
+    }
+
+    @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
+    @Description("C01/US008 – Should throw error when trying to clock-in a completed task")
+    void shouldThrowErrorWhenClockingInCompletedTask() {
+        TaskService taskService = new TaskService();
+        LocalDateTime deadline = LocalDateTime.now().plusDays(1);
+
+        Task task = taskService.createTask("Estudar", "Matéria X", deadline);
+        task.setStatus(TaskStatus.COMPLETED);
+
+        org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy(() -> taskService.clockIn(0))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("Only pending tasks can be started");
     }
 }
