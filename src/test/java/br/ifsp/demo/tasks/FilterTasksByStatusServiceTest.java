@@ -33,7 +33,7 @@ public class FilterTasksByStatusServiceTest {
     @Test
     @Tag("@TDD")
     @Tag("@UnitTest")
-    @Description("C01/US007 – Should throw error for invalid status")
+    @Description("C01/US007 - Should throw error for invalid status")
     void shouldThrowErrorForInvalidStatus() {
         TaskService taskService = new TaskService();
 

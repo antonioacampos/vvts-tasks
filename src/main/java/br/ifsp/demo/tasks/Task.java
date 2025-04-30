@@ -72,5 +72,19 @@ public class Task {
         }
         this.status = TaskStatus.COMPLETED;
     }
+
+    private LocalDateTime startTime;
+
+    public void clockIn() {
+        if (this.status != TaskStatus.PENDING) {
+            throw new IllegalStateException("Only pending tasks can be started");
+        }
+        this.startTime = LocalDateTime.now();
+        this.status = TaskStatus.IN_PROGRESS;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
     
 }
