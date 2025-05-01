@@ -14,6 +14,8 @@ public class Task {
     private long timeSpent;
     private long estimatedTime;
 
+    private String suggestion;
+
     public Task(String title, String description, LocalDateTime deadline) {
 
         if(title.isBlank()) throw new IllegalArgumentException("Cannot create task with blank title");
@@ -121,5 +123,13 @@ public class Task {
 
     public long getEstimatedTime() {
         return estimatedTime;
+    }
+
+    public String getSuggestion() {
+        return suggestion;
+    }
+
+    public void setSuggestion(String suggestion) {
+        this.suggestion = suggestion;
     }
 }
