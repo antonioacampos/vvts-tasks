@@ -99,4 +99,24 @@ public class TaskService {
         }
         return false;
     }
+
+    private void checkAndUpdateStatusForTimeExceeded(Task task) {
+        if (task.getStatus() == TaskStatus.IN_PROGRESS &&
+                LocalDateTime.now().isAfter(task.getStartTime().plusMinutes(task.getEstimatedTime()))) {
+            task.setStatus(TaskStatus.TIME_EXCEEDED);
+        }
+    }
+
+    public String checkAndNotifyTimeExceeded(int index) {
+        if (index < 0 || index >= tasks.size()) {
+            throw new IndexOutOfBoundsException("Task not found");
+        }
+        Task task = tasks.get(index);
+        checkAndUpdateStatusForTimeExceeded(task);
+
+        if (task.getStatus() == TaskStatus.TIME_EXCEEDED) {
+            return "Time exceeded! Please register the clock-out.";
+        }
+        return "Task is within the estimated time.";
+    }
 }
