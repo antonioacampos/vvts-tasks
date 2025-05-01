@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 class TaskServiceTest {
@@ -162,4 +163,26 @@ class TaskServiceTest {
 
         assertThat(information).isEqualTo("");
     }
+
+    @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
+    @Description("Should return the spent time when clock-out")
+    void ShouldReturnSpentTimeWhenClockOut() {
+        // C01/US009
+        TaskService taskService = new TaskService();
+
+        LocalDateTime deadline = LocalDateTime.of(2025, 11, 1, 12, 0);
+        taskService.createTask("task-name", "task-desc", deadline);
+
+        taskService.clockIn(0);
+
+        int timeToCompleteTask = 60;
+        LocalDateTime finishTime = LocalDateTime.now().plusMinutes(timeToCompleteTask);
+
+        taskService.clockOut(0, finishTime);
+
+        assertEquals(timeToCompleteTask, taskService.getSpentTime(0));
+    }
+
 }
