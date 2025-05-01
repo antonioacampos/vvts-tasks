@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 
 class TaskServiceTest {
@@ -185,4 +186,18 @@ class TaskServiceTest {
         assertEquals(timeToCompleteTask, taskService.getSpentTime(0));
     }
 
+    @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
+    @Description("Should return an error when clock-out without clock-in")
+    void shouldReturnErrorWhenClockOutWithoutClockIn() {
+        // C02/US009
+
+        TaskService taskService = new TaskService();
+        LocalDateTime deadline = LocalDateTime.of(2025, 11, 1, 12, 0);
+        taskService.createTask("task-name", "task-desc", deadline);
+        LocalDateTime finishTime = LocalDateTime.of(2025, 12, 2, 2, 2);
+
+        assertThrows(IllegalStateException.class, () -> taskService.clockOut(0, finishTime));
+    }
 }
