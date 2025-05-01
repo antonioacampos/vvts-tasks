@@ -64,7 +64,7 @@ public class TaskService {
         return tasks.stream()
                 .filter(t -> t.getStatus() == status)
                 .collect(Collectors.toList());
-    }    
+    }
 
     public void clockIn(int index) {
         if (index < 0 || index >= tasks.size()) {
@@ -87,4 +87,16 @@ public class TaskService {
         return task.getTimeSpent();
     }
 
+    public boolean checkForTimeExceeded(int index) {
+        if (index < 0 || index >= tasks.size()) {
+            throw new IndexOutOfBoundsException("Task not found");
+        }
+        Task task = tasks.get(index);
+
+        if (task.getStatus() == TaskStatus.IN_PROGRESS && LocalDateTime.now().isAfter(task.getStartTime().plusMinutes(task.getEstimatedTime()))) {
+            task.setStatus(TaskStatus.TIME_EXCEEDED);
+            return true;
+        }
+        return false;
+    }
 }
