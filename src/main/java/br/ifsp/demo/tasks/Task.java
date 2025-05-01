@@ -9,6 +9,10 @@ public class Task {
     private LocalDateTime deadline;
     private TaskStatus status = TaskStatus.PENDING;
 
+    private LocalDateTime startTime;
+    private LocalDateTime finishTime;
+    private long timeSpent;
+
     public Task(String title, String description, LocalDateTime deadline) {
 
         if(title.isBlank()) throw new IllegalArgumentException("Cannot create task with blank title");
@@ -73,8 +77,6 @@ public class Task {
         this.status = TaskStatus.COMPLETED;
     }
 
-    private LocalDateTime startTime;
-
     public void clockIn() {
         if (this.status != TaskStatus.PENDING) {
             throw new IllegalStateException("Only pending tasks can be started");
@@ -83,8 +85,22 @@ public class Task {
         this.status = TaskStatus.IN_PROGRESS;
     }
 
+    public void clockOut(LocalDateTime finishTime) {
+        this.finishTime = finishTime;
+        this.timeSpent = startTime.until(finishTime, java.time.temporal.ChronoUnit.MINUTES);
+        this.status = TaskStatus.COMPLETED;
+    }
+
     public LocalDateTime getStartTime() {
         return startTime;
     }
-    
+
+    public LocalDateTime getFinishTime() {
+        return finishTime;
+    }
+
+    public long getTimeSpent() {
+        return timeSpent;
+    }
+
 }

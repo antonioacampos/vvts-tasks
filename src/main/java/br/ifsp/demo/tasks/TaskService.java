@@ -73,5 +73,18 @@ public class TaskService {
         Task task = tasks.get(index);
         task.clockIn();
     }
-    
+
+    public void clockOut(int index, LocalDateTime finishTime) {
+        Task task = tasks.get(index);
+        task.clockOut(finishTime);
+    }
+
+    public long getSpentTime(int index) {
+        if (index < 0 || index >= tasks.size()) {
+            throw new IndexOutOfBoundsException("Task not found");
+        }
+        Task task = tasks.get(index);
+        return task.getTimeSpent();
+    }
+
 }
