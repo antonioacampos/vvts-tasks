@@ -175,7 +175,8 @@ class TaskServiceTest {
         LocalDateTime deadline = LocalDateTime.of(2025, 11, 1, 12, 0);
         taskService.createTask("task-name", "task-desc", deadline);
 
-        taskService.clockIn(0);
+        LocalDateTime startTime = LocalDateTime.now();
+        taskService.clockIn(0, startTime);
 
         int timeToCompleteTask = 60;
         LocalDateTime finishTime = LocalDateTime.now().plusMinutes(timeToCompleteTask);

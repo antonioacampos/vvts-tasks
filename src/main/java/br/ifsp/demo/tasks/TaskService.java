@@ -66,12 +66,12 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
-    public void clockIn(int index) {
+    public void clockIn(int index, LocalDateTime startTime) {
         if (index < 0 || index >= tasks.size()) {
             throw new IndexOutOfBoundsException("Task not found");
         }
         Task task = tasks.get(index);
-        task.clockIn();
+        task.clockIn(startTime);
     }
 
     public void clockOut(int index, LocalDateTime finishTime) {

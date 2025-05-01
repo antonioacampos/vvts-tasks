@@ -18,10 +18,10 @@ public class RegisterClockInServiceTest {
     void shouldRegisterClockInAndUpdateStatus() {
         TaskService taskService = new TaskService();
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
-
+        LocalDateTime startTime = LocalDateTime.now();
         Task task = taskService.createTask("Ler", "Livro A", deadline);
 
-        taskService.clockIn(0);
+        taskService.clockIn(0, startTime);
 
         assertThat(task.getStatus()).isEqualTo(TaskStatus.IN_PROGRESS);
         assertThat(task.getStartTime()).isNotNull();
@@ -38,7 +38,8 @@ public class RegisterClockInServiceTest {
         Task task = taskService.createTask("Estudar", "Matéria X", deadline);
         task.setStatus(TaskStatus.COMPLETED);
 
-        org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy(() -> taskService.clockIn(0))
+        LocalDateTime startTime = LocalDateTime.now();
+        org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy(() -> taskService.clockIn(0, startTime))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Only pending tasks can be started");
     }
@@ -54,7 +55,8 @@ public class RegisterClockInServiceTest {
         Task task = taskService.createTask("Projeto", "Clock-in duplo", deadline);
         task.setStatus(TaskStatus.IN_PROGRESS);
 
-        assertThatThrownBy(() -> taskService.clockIn(0))
+        LocalDateTime startTime = LocalDateTime.now();
+        assertThatThrownBy(() -> taskService.clockIn(0, startTime))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("Only pending tasks can be started");
     }

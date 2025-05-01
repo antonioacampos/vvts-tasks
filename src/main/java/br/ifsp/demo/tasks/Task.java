@@ -12,6 +12,7 @@ public class Task {
     private LocalDateTime startTime;
     private LocalDateTime finishTime;
     private long timeSpent;
+    private long estimatedTime;
 
     public Task(String title, String description, LocalDateTime deadline) {
 
@@ -77,11 +78,19 @@ public class Task {
         this.status = TaskStatus.COMPLETED;
     }
 
-    public void clockIn() {
+    public void clockIn(LocalDateTime startTime) {
         if (this.status != TaskStatus.PENDING) {
             throw new IllegalStateException("Only pending tasks can be started");
         }
-        this.startTime = LocalDateTime.now();
+
+        if (startTime == null) {
+            throw new IllegalArgumentException("Start time cannot be null");
+        }
+
+        if (startTime.isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Start time cannot be in the future");
+        }
+        this.startTime = startTime;
         this.status = TaskStatus.IN_PROGRESS;
     }
 
@@ -106,4 +115,11 @@ public class Task {
         return timeSpent;
     }
 
+    public void setEstimatedTime(long estimatedTime) {
+        this.estimatedTime = estimatedTime;
+    }
+
+    public long getEstimatedTime() {
+        return estimatedTime;
+    }
 }
