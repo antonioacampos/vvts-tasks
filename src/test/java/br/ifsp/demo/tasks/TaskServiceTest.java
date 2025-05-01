@@ -242,5 +242,23 @@ class TaskServiceTest {
         assertEquals(TaskStatus.TIME_EXCEEDED, task.getStatus(), "The task status must be 'Time Exceeded'.");
     }
 
+    @Test
+    void ShouldNotSuggestReevaluationIfTimeExceededIsWithinTolerance() {
+        TaskService taskService = new TaskService();
+
+        LocalDateTime deadline = LocalDateTime.of(2025, 12, 1, 12, 0);
+        Task task = taskService.createTask("task-name", "task-desc", deadline);
+
+        long estimatedTime = 60;
+        task.setEstimatedTime(estimatedTime);
+
+        LocalDateTime startTime = LocalDateTime.now().minusMinutes(65);
+        taskService.clockIn(0, startTime);
+        String notification = taskService.checkAndNotifyTimeExceeded(0);
+
+        assertEquals("Time exceeded! Please register the clock-out.", notification, "The system must notify that the time is exceeded without suggesting re-evaluation.");
+        assertNull(task.getSuggestion(), "The system should not suggest re-evaluation when the time exceeded is within tolerance.");
+    }
+
 
 }
