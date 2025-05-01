@@ -92,12 +92,8 @@ public class TaskService {
             throw new IndexOutOfBoundsException("Task not found");
         }
         Task task = tasks.get(index);
-
-        if (task.getStatus() == TaskStatus.IN_PROGRESS && LocalDateTime.now().isAfter(task.getStartTime().plusMinutes(task.getEstimatedTime()))) {
-            task.setStatus(TaskStatus.TIME_EXCEEDED);
-            return true;
-        }
-        return false;
+        checkAndUpdateStatusForTimeExceeded(task);
+        return task.getStatus() == TaskStatus.TIME_EXCEEDED;
     }
 
     private void checkAndUpdateStatusForTimeExceeded(Task task) {
