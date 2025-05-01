@@ -86,6 +86,9 @@ public class Task {
     }
 
     public void clockOut(LocalDateTime finishTime) {
+        if (this.status != TaskStatus.IN_PROGRESS) {
+            throw new IllegalStateException("Task must be in progress to be clocked out");
+        }
         this.finishTime = finishTime;
         this.timeSpent = startTime.until(finishTime, java.time.temporal.ChronoUnit.MINUTES);
         this.status = TaskStatus.COMPLETED;
