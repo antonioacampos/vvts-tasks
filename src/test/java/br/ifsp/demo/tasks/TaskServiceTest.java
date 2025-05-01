@@ -8,8 +8,7 @@ import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class TaskServiceTest {
@@ -200,4 +199,28 @@ class TaskServiceTest {
 
         assertThrows(IllegalStateException.class, () -> taskService.clockOut(0, finishTime));
     }
+
+    @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
+    @Description("Should return exceeded time when clockout not registered")
+    void ShouldNotifyTimeExceededWhenClockOutNotRegistered() {
+        TaskService taskService = new TaskService();
+
+        LocalDateTime deadline = LocalDateTime.of(2025, 12, 1, 12, 0);
+        Task task = taskService.createTask("task-name", "task-desc", deadline);
+
+        long estimatedTime = 60;
+        task.setEstimatedTime(estimatedTime);
+
+        LocalDateTime startTime = LocalDateTime.now().minusMinutes(90);
+        taskService.clockIn(0, startTime);
+
+        boolean isTimeExceeded = taskService.checkForTimeExceeded(0);
+
+        assertTrue(isTimeExceeded, "Task must be setted to 'exceeded time'.");
+        assertEquals(TaskStatus.TIME_EXCEEDED, task.getStatus(), "Task status must be 'Time exceeded'.");
+    }
+
+
 }
