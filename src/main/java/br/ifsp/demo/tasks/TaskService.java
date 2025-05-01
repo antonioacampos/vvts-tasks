@@ -1,5 +1,6 @@
 package br.ifsp.demo.tasks;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -99,7 +100,14 @@ public class TaskService {
     private void checkAndUpdateStatusForTimeExceeded(Task task) {
         if (task.getStatus() == TaskStatus.IN_PROGRESS &&
                 LocalDateTime.now().isAfter(task.getStartTime().plusMinutes(task.getEstimatedTime()))) {
-            task.setStatus(TaskStatus.TIME_EXCEEDED);
+            long timeExceeded = LocalDateTime.now().until(task.getStartTime().plusMinutes(task.getEstimatedTime()), ChronoUnit.MINUTES);
+            long tolerance = (long) (task.getEstimatedTime() * 0.10);
+            if (timeExceeded <= tolerance) {
+                task.setStatus(TaskStatus.TIME_EXCEEDED);
+            } else {
+                task.setStatus(TaskStatus.TIME_EXCEEDED);
+                task.setSuggestion("Please re-evaluate the task.");
+            }
         }
     }
 
@@ -111,6 +119,9 @@ public class TaskService {
         checkAndUpdateStatusForTimeExceeded(task);
 
         if (task.getStatus() == TaskStatus.TIME_EXCEEDED) {
+            if (task.getSuggestion() != null) {
+                return task.getSuggestion();
+            }
             return "Time exceeded! Please register the clock-out.";
         }
         return "Task is within the estimated time.";
