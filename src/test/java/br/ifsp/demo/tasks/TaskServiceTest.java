@@ -280,4 +280,22 @@ class TaskServiceTest {
         assertNotNull(task.getSuggestion(), "The system should provide a suggestion for re-evaluation.");
     }
 
+    @Test
+    void ShouldNotifyClockOutForgottenWhenTimeExceeded() {
+        TaskService taskService = new TaskService();
+
+        LocalDateTime deadline = LocalDateTime.of(2025, 12, 1, 12, 0);
+        Task task = taskService.createTask("task-name", "task-desc", deadline);
+
+        long estimatedTime = 60;
+        task.setEstimatedTime(estimatedTime);
+
+        LocalDateTime startTime = LocalDateTime.now().minusMinutes(90);
+        taskService.clockIn(0, startTime);
+
+        String notification = taskService.checkForClockOutForgotten(0);
+
+        assertEquals("You forgot to clock out. Please register the clock-out.", notification, "The system should notify the user about the forgotten clock-out.");
+    }
+
 }
