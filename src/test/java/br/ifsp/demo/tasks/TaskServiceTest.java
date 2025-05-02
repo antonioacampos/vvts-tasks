@@ -224,6 +224,9 @@ class TaskServiceTest {
     }
 
     @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
+    @Description("Should notify the time exceeded when task is consulted")
     void ShouldNotifyTimeExceededWhenTaskIsConsulted() {
         TaskService taskService = new TaskService();
 
@@ -243,6 +246,9 @@ class TaskServiceTest {
     }
 
     @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
+    @Description("Should not suggest reevaluation if time exceeded is within tolerance")
     void ShouldNotSuggestReevaluationIfTimeExceededIsWithinTolerance() {
         TaskService taskService = new TaskService();
 
@@ -261,6 +267,9 @@ class TaskServiceTest {
     }
 
     @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
+    @Description("Should suggest reevaluation when time exceeded is above tolerance")
     void ShouldSuggestReevaluationWhenTimeExceededIsAboveTolerance() {
         TaskService taskService = new TaskService();
 
@@ -281,6 +290,9 @@ class TaskServiceTest {
     }
 
     @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
+    @Description("Should notify clock out forgotten when the time is exceeded")
     void ShouldNotifyClockOutForgottenWhenTimeExceeded() {
         TaskService taskService = new TaskService();
 
@@ -299,6 +311,9 @@ class TaskServiceTest {
     }
 
     @Test
+    @Tag("@TDD")
+    @Tag("@UnitTest")
+    @Description("Should notify clock out not necessary when the task is completed")
     void ShouldNotifyClockOutNotNecessaryWhenTaskIsCompleted() {
         TaskService taskService = new TaskService();
 
