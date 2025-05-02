@@ -260,5 +260,24 @@ class TaskServiceTest {
         assertNull(task.getSuggestion(), "The system should not suggest re-evaluation when the time exceeded is within tolerance.");
     }
 
+    @Test
+    void ShouldSuggestReevaluationWhenTimeExceededIsAboveTolerance() {
+        TaskService taskService = new TaskService();
+
+        LocalDateTime deadline = LocalDateTime.of(2025, 12, 1, 12, 0);
+        Task task = taskService.createTask("task-name", "task-desc", deadline);
+
+        long estimatedTime = 60;
+        task.setEstimatedTime(estimatedTime);
+
+        LocalDateTime startTime = LocalDateTime.now().minusMinutes(120);
+        taskService.clockIn(0, startTime);
+
+        String notification = taskService.checkAndNotifyTimeExceeded(0);
+        System.out.println(notification);
+        assertEquals("Please re-evaluate or adjust the task.", notification, "The system should suggest task re-evaluation when time exceeds tolerance.");
+        assertEquals(TaskStatus.TIME_EXCEEDED, task.getStatus(), "The task status must be 'Time Exceeded'.");
+        assertNotNull(task.getSuggestion(), "The system should provide a suggestion for re-evaluation.");
+    }
 
 }
