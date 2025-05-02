@@ -98,15 +98,15 @@ public class TaskService {
     }
 
     private void checkAndUpdateStatusForTimeExceeded(Task task) {
-        if (task.getStatus() == TaskStatus.IN_PROGRESS &&
-                LocalDateTime.now().isAfter(task.getStartTime().plusMinutes(task.getEstimatedTime()))) {
-            long timeExceeded = LocalDateTime.now().until(task.getStartTime().plusMinutes(task.getEstimatedTime()), ChronoUnit.MINUTES);
+        if (task.getStatus() == TaskStatus.IN_PROGRESS) {
+            long timeExceeded = ChronoUnit.MINUTES.between(task.getStartTime(), LocalDateTime.now());
             long tolerance = (long) (task.getEstimatedTime() * 0.10);
-            if (timeExceeded <= tolerance) {
+            if (timeExceeded > task.getEstimatedTime() + tolerance) {
                 task.setStatus(TaskStatus.TIME_EXCEEDED);
+                task.setSuggestion("Please re-evaluate or adjust the task.");
             } else {
                 task.setStatus(TaskStatus.TIME_EXCEEDED);
-                task.setSuggestion("Please re-evaluate the task.");
+                task.setSuggestion(null);
             }
         }
     }
