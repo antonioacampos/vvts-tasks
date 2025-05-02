@@ -233,7 +233,7 @@ class TaskServiceTest {
         long estimatedTime = 60;
         task.setEstimatedTime(estimatedTime);
 
-        LocalDateTime startTime = LocalDateTime.now().minusMinutes(90);
+        LocalDateTime startTime = LocalDateTime.now().minusMinutes(65);
         taskService.clockIn(0, startTime);
 
         String notification = taskService.checkAndNotifyTimeExceeded(0);
