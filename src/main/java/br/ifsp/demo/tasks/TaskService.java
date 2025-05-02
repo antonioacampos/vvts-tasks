@@ -126,4 +126,18 @@ public class TaskService {
         }
         return "Task is within the estimated time.";
     }
+
+    public String checkForClockOutForgotten(int index) {
+        if (index < 0 || index >= tasks.size()) {
+            throw new IndexOutOfBoundsException("Task not found");
+        }
+        Task task = tasks.get(index);
+
+        if (task.getStatus() == TaskStatus.IN_PROGRESS &&
+                LocalDateTime.now().isAfter(task.getStartTime().plusMinutes(task.getEstimatedTime())) &&
+                task.getFinishTime() == null) {
+            return "You forgot to clock out. Please register the clock-out.";
+        }
+        return "Task is within the estimated time or clock-out is already registered.";
+    }
 }
