@@ -87,5 +87,16 @@ public class TaskController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @GetMapping("/get-by-status")
+    public ResponseEntity<?> getByStatus(@RequestParam(required = true) String status){
+        final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
+        List<Task> tasks = taskService.filterByStatus(status);
+
+        List<ResponseTaskDTO> response = tasks.stream()
+                .map(ResponseTaskDTO::new)
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
