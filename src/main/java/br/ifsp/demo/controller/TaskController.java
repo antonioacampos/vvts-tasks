@@ -31,8 +31,8 @@ public class TaskController {
     public ResponseEntity<?> create(@RequestBody CreateTaskDTO task){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
-        Task newTask = taskService.createTask(task.title(), task.description(), task.deadline());
-
+        Task newTask = taskService.createTask(task.title(), task.description(), task.deadline(), userID);
+    
         ResponseTaskDTO response = new ResponseTaskDTO(newTask);
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
@@ -42,7 +42,7 @@ public class TaskController {
     public ResponseEntity<?> edit(@PathVariable int id, @RequestBody CreateTaskDTO task){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
-        Task editedTask = taskService.editTask(id, task.title(), task.description(), task.deadline());
+        Task editedTask = taskService.editTask(id, task.title(), task.description(), task.deadline(), userID);
 
         ResponseTaskDTO response = new ResponseTaskDTO(editedTask);
 
@@ -53,7 +53,7 @@ public class TaskController {
     public ResponseEntity<?> getAll(){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
-        String response = taskService.getAllInformation();
+        String response = taskService.getAllInformation(userID);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -62,7 +62,7 @@ public class TaskController {
     public ResponseEntity<?> delete(@PathVariable int id){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
-        taskService.deleteTask(id);
+        taskService.deleteTask(id, userID);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 
@@ -72,7 +72,7 @@ public class TaskController {
     public ResponseEntity<?> get(@PathVariable int id){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
-        Task task = taskService.getTask(id);
+        Task task = taskService.getTask(id, userID);
 
         ResponseTaskDTO response = new ResponseTaskDTO(task);
 
@@ -80,10 +80,10 @@ public class TaskController {
     }
 
     @PutMapping("/mark-completed/{id}")
-    public ResponseEntity<?> markCompletec(@PathVariable int id){
+    public ResponseEntity<?> markCompleted(@PathVariable int id){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
-        taskService.markAsCompleted(id);
+        taskService.markAsCompleted(id, userID);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -92,7 +92,7 @@ public class TaskController {
     public ResponseEntity<?> getByStatus(@RequestParam(required = true) String status){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
-        List<Task> tasks = taskService.filterByStatus(status);
+        List<Task> tasks = taskService.filterByStatus(status, userID);
 
         List<ResponseTaskDTO> response = tasks.stream()
                 .map(ResponseTaskDTO::new)
@@ -105,7 +105,7 @@ public class TaskController {
     public ResponseEntity<?> clockIn(@PathVariable int id){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
-        taskService.clockIn(id, LocalDateTime.now());
+        taskService.clockIn(id, LocalDateTime.now(), userID);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -114,7 +114,7 @@ public class TaskController {
     public ResponseEntity<?> clockOut(@PathVariable int id){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
-        taskService.clockOut(id, LocalDateTime.now());
+        taskService.clockOut(id, LocalDateTime.now(), userID);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -123,7 +123,7 @@ public class TaskController {
     public ResponseEntity<?> spentTime(@PathVariable int id){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
-        long time = taskService.getSpentTime(id);
+        long time = taskService.getSpentTime(id, userID);
 
         Map<String, Long> response = Map.of("status", time);
 
@@ -134,7 +134,7 @@ public class TaskController {
     public ResponseEntity<?> checkTimeExceeded(@PathVariable int id){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
-        boolean exceeded = taskService.checkForTimeExceeded(id);
+        boolean exceeded = taskService.checkForTimeExceeded(id, userID);
 
         Map<String, Boolean> response = Map.of("status", exceeded);
 
@@ -145,7 +145,7 @@ public class TaskController {
     public ResponseEntity<?> notifyTimeExceeded(@PathVariable int id){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
-        String notify = taskService.checkAndNotifyTimeExceeded(id);
+        String notify = taskService.checkAndNotifyTimeExceeded(id, userID);
 
         Map<String, String> response = Map.of("status", notify);
 
@@ -156,7 +156,7 @@ public class TaskController {
     public ResponseEntity<?> clockOutForgotten(@PathVariable int id){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
-        String check = taskService.checkForClockOutForgotten(id);
+        String check = taskService.checkForClockOutForgotten(id, userID);
 
         Map<String, String> response = Map.of("status", check);
 
@@ -167,7 +167,7 @@ public class TaskController {
     public ResponseEntity<?> clockOutForgottenCompletedTask(@PathVariable int id){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
-        String check = taskService.checkForClockOutForgottenInCompletedTask(id);
+        String check = taskService.checkForClockOutForgottenInCompletedTask(id, userID);
 
         Map<String, String> response = Map.of("status", check);
 
