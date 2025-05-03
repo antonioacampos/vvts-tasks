@@ -162,4 +162,15 @@ public class TaskController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping("/clock-out-forgotten-completed-task/{id}")
+    public ResponseEntity<?> clockOutForgottenCompletedTask(@PathVariable int id){
+        final UUID userID = authenticationInfoService.getAuthenticatedUserId();
+
+        String check = taskService.checkForClockOutForgottenInCompletedTask(id);
+
+        Map<String, String> response = Map.of("status", check);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
