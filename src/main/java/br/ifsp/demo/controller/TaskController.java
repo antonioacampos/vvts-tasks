@@ -6,6 +6,7 @@ import br.ifsp.demo.tasks.TaskService;
 import br.ifsp.demo.tasks.dtos.CreateTaskDTO;
 import br.ifsp.demo.tasks.dtos.ResponseTaskDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -98,5 +99,14 @@ public class TaskController {
                 .collect(Collectors.toList());
 
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping("/clock-in/{id}")
+    public ResponseEntity<?> clockIn(@PathVariable int id){
+        final UUID userID = authenticationInfoService.getAuthenticatedUserId();
+
+        taskService.clockIn(id, LocalDateTime.now());
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
