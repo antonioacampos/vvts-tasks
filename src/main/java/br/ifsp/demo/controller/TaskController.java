@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/task")
@@ -30,11 +32,7 @@ public class TaskController {
 
         Task newTask = taskService.createTask(task.title(), task.description(), task.deadline());
 
-        ResponseTaskDTO response = new ResponseTaskDTO(
-                newTask.getTitle(),
-                newTask.getDescription(),
-                newTask.getDeadline()
-        );
+        ResponseTaskDTO response = new ResponseTaskDTO(newTask);
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -45,11 +43,7 @@ public class TaskController {
 
         Task editedTask = taskService.editTask(id, task.title(), task.description(), task.deadline());
 
-        ResponseTaskDTO response = new ResponseTaskDTO(
-                editedTask.getTitle(),
-                editedTask.getDescription(),
-                editedTask.getDeadline()
-        );
+        ResponseTaskDTO response = new ResponseTaskDTO(editedTask);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -79,11 +73,7 @@ public class TaskController {
 
         Task task = taskService.getTask(id);
 
-        ResponseTaskDTO response = new ResponseTaskDTO(
-                task.getTitle(),
-                task.getDescription(),
-                task.getDeadline()
-        );
+        ResponseTaskDTO response = new ResponseTaskDTO(task);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -96,4 +86,6 @@ public class TaskController {
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+
 }
