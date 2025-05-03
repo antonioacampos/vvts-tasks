@@ -73,4 +73,18 @@ public class TaskController {
 
     }
 
+    @GetMapping("get/{id}")
+    public ResponseEntity<?> get(@PathVariable int id){
+        final UUID userID = authenticationInfoService.getAuthenticatedUserId();
+
+        Task task = taskService.getTask(id);
+
+        ResponseTaskDTO response = new ResponseTaskDTO(
+                task.getTitle(),
+                task.getDescription(),
+                task.getDeadline()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
