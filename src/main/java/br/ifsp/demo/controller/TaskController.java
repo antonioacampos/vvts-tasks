@@ -6,7 +6,6 @@ import br.ifsp.demo.tasks.TaskService;
 import br.ifsp.demo.tasks.dtos.CreateTaskDTO;
 import br.ifsp.demo.tasks.dtos.ResponseTaskDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.websocket.server.PathParam;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,7 +68,7 @@ public class TaskController {
 
     }
 
-    @GetMapping("get/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<?> get(@PathVariable int id){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
@@ -131,7 +130,7 @@ public class TaskController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("check-time-exceeded/{id}")
+    @GetMapping("/check-time-exceeded/{id}")
     public ResponseEntity<?> checkTimeExceeded(@PathVariable int id){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
@@ -149,6 +148,17 @@ public class TaskController {
         String notify = taskService.checkAndNotifyTimeExceeded(id);
 
         Map<String, String> response = Map.of("status", notify);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/clock-out-forgotten/{id}")
+    public ResponseEntity<?> clockOutForgotten(@PathVariable int id){
+        final UUID userID = authenticationInfoService.getAuthenticatedUserId();
+
+        String check = taskService.checkForClockOutForgotten(id);
+
+        Map<String, String> response = Map.of("status", check);
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
