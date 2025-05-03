@@ -6,10 +6,12 @@ import jdk.jfr.Description;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 public class FilterTasksByStatusServiceTest {
+    UUID userId1 = UUID.randomUUID();
 
     @Test
     @Tag("@TDD")
@@ -19,13 +21,13 @@ public class FilterTasksByStatusServiceTest {
         TaskService taskService = new TaskService();
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
-        Task t1 = taskService.createTask("Estudar", "Mat A", deadline);
+        Task t1 = taskService.createTask("Estudar", "Mat A", deadline, userId1);
         t1.setStatus(TaskStatus.IN_PROGRESS);
 
-        Task t2 = taskService.createTask("Ler", "Cap 3", deadline.plusDays(1));
+        Task t2 = taskService.createTask("Ler", "Cap 3", deadline.plusDays(1), userId1);
         t2.setStatus(TaskStatus.COMPLETED);
 
-        List<Task> result = taskService.filterByStatus("IN_PROGRESS");
+        List<Task> result = taskService.filterByStatus("IN_PROGRESS", userId1);
 
         assertThat(result.size()).isEqualTo(1);
         assertThat(result.get(0).getTitle()).isEqualTo("Estudar");
@@ -37,7 +39,7 @@ public class FilterTasksByStatusServiceTest {
     void shouldThrowErrorForInvalidStatus() {
         TaskService taskService = new TaskService();
 
-        org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy(() -> taskService.filterByStatus("INVALID"))
+        org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy(() -> taskService.filterByStatus("INVALID", userId1))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Invalid status: INVALID");
     }
