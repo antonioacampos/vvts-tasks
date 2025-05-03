@@ -5,11 +5,13 @@ import org.junit.jupiter.api.Test;
 import jdk.jfr.Description;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 public class RegisterClockInServiceTest {
+    UUID userId1 = UUID.randomUUID();
 
     @Test
     @Tag("@TDD")
@@ -19,9 +21,9 @@ public class RegisterClockInServiceTest {
         TaskService taskService = new TaskService();
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
         LocalDateTime startTime = LocalDateTime.now();
-        Task task = taskService.createTask("Ler", "Livro A", deadline);
+        Task task = taskService.createTask("Ler", "Livro A", deadline, userId1);
 
-        taskService.clockIn(0, startTime);
+        taskService.clockIn(0, startTime, userId1);
 
         assertThat(task.getStatus()).isEqualTo(TaskStatus.IN_PROGRESS);
         assertThat(task.getStartTime()).isNotNull();
@@ -35,11 +37,11 @@ public class RegisterClockInServiceTest {
         TaskService taskService = new TaskService();
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
-        Task task = taskService.createTask("Estudar", "Matéria X", deadline);
+        Task task = taskService.createTask("Estudar", "Matéria X", deadline, userId1);
         task.setStatus(TaskStatus.COMPLETED);
 
         LocalDateTime startTime = LocalDateTime.now();
-        org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy(() -> taskService.clockIn(0, startTime))
+        org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy(() -> taskService.clockIn(0, startTime, userId1))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Only pending tasks can be started");
     }
@@ -52,11 +54,11 @@ public class RegisterClockInServiceTest {
         TaskService taskService = new TaskService();
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
-        Task task = taskService.createTask("Projeto", "Clock-in duplo", deadline);
+        Task task = taskService.createTask("Projeto", "Clock-in duplo", deadline, userId1);
         task.setStatus(TaskStatus.IN_PROGRESS);
 
         LocalDateTime startTime = LocalDateTime.now();
-        assertThatThrownBy(() -> taskService.clockIn(0, startTime))
+        assertThatThrownBy(() -> taskService.clockIn(0, startTime, userId1))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("Only pending tasks can be started");
     }
