@@ -128,8 +128,17 @@ public class TaskController {
 
         Map<String, Long> response = Map.of("status", time);
 
-
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("check-time-exceeded/{id}")
+    public ResponseEntity<?> checkTimeExceeded(@PathVariable int id){
+        final UUID userID = authenticationInfoService.getAuthenticatedUserId();
+
+        boolean exceeded = taskService.checkForTimeExceeded(id);
+
+        Map<String, Boolean> response = Map.of("status", exceeded);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
