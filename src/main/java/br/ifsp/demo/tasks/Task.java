@@ -1,6 +1,7 @@
 package br.ifsp.demo.tasks;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.UUID;
 
 public class Task {
 
@@ -16,7 +17,9 @@ public class Task {
 
     private String suggestion;
 
-    public Task(String title, String description, LocalDateTime deadline) {
+    private UUID userId;
+
+    public Task(String title, String description, LocalDateTime deadline, UUID userId) {
 
         if(title.isBlank()) throw new IllegalArgumentException("Cannot create task with blank title");
 
@@ -25,6 +28,7 @@ public class Task {
         this.title = title;
         this.description = description;
         this.deadline = deadline;
+        this.userId = userId;
     }
 
     public String getTitle() {
@@ -131,5 +135,9 @@ public class Task {
 
     public void setSuggestion(String suggestion) {
         this.suggestion = suggestion;
+    }
+
+    public UUID getUserId() {
+        return userId;
     }
 }
