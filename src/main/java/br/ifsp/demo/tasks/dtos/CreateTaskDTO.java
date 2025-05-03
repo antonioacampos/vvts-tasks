@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 public record CreateTaskDTO(
         @NotBlank String title,
         String description,
-        @Future LocalDateTime deadline
+        @Future LocalDateTime deadline,
+        long estimatedTime,
+        String suggestion
 ) {
 }
