@@ -141,4 +141,15 @@ public class TaskController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping("/notify-time-exceeded/{id}")
+    public ResponseEntity<?> notifyTimeExceeded(@PathVariable int id){
+        final UUID userID = authenticationInfoService.getAuthenticatedUserId();
+
+        String notify = taskService.checkAndNotifyTimeExceeded(id);
+
+        Map<String, String> response = Map.of("status", notify);
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }
