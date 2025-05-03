@@ -87,4 +87,13 @@ public class TaskController {
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @PutMapping("/mark-completed/{id}")
+    public ResponseEntity<?> markCompletec(@PathVariable int id){
+        final UUID userID = authenticationInfoService.getAuthenticatedUserId();
+
+        taskService.markAsCompleted(id);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
