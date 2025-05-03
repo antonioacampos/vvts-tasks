@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -123,10 +124,12 @@ public class TaskController {
     public ResponseEntity<?> spentTime(@PathVariable int id){
         final UUID userID = authenticationInfoService.getAuthenticatedUserId();
 
-        taskService.getSpentTime(id);
+        long time = taskService.getSpentTime(id);
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        Map<String, Long> response = Map.of("status", time);
+
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
 
 }
