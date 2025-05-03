@@ -109,4 +109,13 @@ public class TaskController {
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @PutMapping("/clock-out/{id}")
+    public ResponseEntity<?> clockOut(@PathVariable int id){
+        final UUID userID = authenticationInfoService.getAuthenticatedUserId();
+
+        taskService.clockOut(id, LocalDateTime.now());
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
