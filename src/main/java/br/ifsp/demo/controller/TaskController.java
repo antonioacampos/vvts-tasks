@@ -118,4 +118,15 @@ public class TaskController {
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/spent-time/{id}")
+    public ResponseEntity<?> spentTime(@PathVariable int id){
+        final UUID userID = authenticationInfoService.getAuthenticatedUserId();
+
+        taskService.getSpentTime(id);
+
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+
 }
