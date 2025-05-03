@@ -39,8 +39,25 @@ public class TaskController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<?> edit(@PathVariable int id, @RequestBody CreateTaskDTO task){
+        final UUID userID = authenticationInfoService.getAuthenticatedUserId();
+
+        Task editedTask = taskService.editTask(id, task.title(), task.description(), task.deadline());
+
+        ResponseTaskDTO response = new ResponseTaskDTO(
+                editedTask.getTitle(),
+                editedTask.getDescription(),
+                editedTask.getDeadline()
+        );
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @GetMapping("/get-all")
     public ResponseEntity<?> getAll(){
+        final UUID userID = authenticationInfoService.getAuthenticatedUserId();
+
         String response = taskService.getAllInformation();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
