@@ -34,7 +34,7 @@ public class TaskServiceDB {
             () -> new IllegalArgumentException("Task not found")
         );
     }
-    
+
     public TaskEntity clockIn(UUID taskId, UUID userId) {
         TaskEntity task = getByIdAndUser(taskId, userId);
     
@@ -47,4 +47,22 @@ public class TaskServiceDB {
     
         return repository.save(task);
     }    
+
+    public TaskEntity clockOut(UUID taskId, UUID userId) {
+        TaskEntity task = getByIdAndUser(taskId, userId);
+    
+        if (task.getStatus() != TaskStatus.IN_PROGRESS) {
+            throw new IllegalStateException("Only IN_PROGRESS tasks can be finished");
+        }
+    
+        LocalDateTime finishTime = LocalDateTime.now();
+        long timeSpent = java.time.Duration.between(task.getStartTime(), finishTime).toMinutes();
+    
+        task.setFinishTime(finishTime);
+        task.setTimeSpent(timeSpent);
+        task.setStatus(TaskStatus.COMPLETED);
+
+        return repository.save(task);
+    }
+    
 }

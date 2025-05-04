@@ -20,7 +20,7 @@ class TaskServiceDBTest {
 
     @Autowired
     private JpaTaskRepository repository;
-
+    
     @Test
     void createTask_shouldPersistSuccessfully() {
         UUID userId = UUID.randomUUID();
@@ -107,4 +107,34 @@ class TaskServiceDBTest {
             service.clockIn(task.getId(), userId);
         });
     }
+
+    @Test
+    @Tag("TDD")
+    void shouldFinishTaskIfInProgress() {
+        UUID userId = UUID.randomUUID();
+        TaskEntity task = service.create("Ler livro", "Capítulo 3", LocalDateTime.now().plusHours(1), 30, userId);
+        
+        // Primeiro faz o clock-in
+        service.clockIn(task.getId(), userId);
+
+        // Faz o clock-out
+        TaskEntity finished = service.clockOut(task.getId(), userId);
+
+        assertNotNull(finished.getFinishTime());
+        assertTrue(finished.getTimeSpent() >= 0);
+        assertEquals(TaskStatus.COMPLETED, finished.getStatus());
+    }
+
+    @Test
+    @Tag("TDD")
+    void shouldNotFinishIfNotInProgress() {
+        UUID userId = UUID.randomUUID();
+        TaskEntity task = service.create("Escrever relatório", "Página 2", LocalDateTime.now().plusHours(2), 45, userId);
+
+        // Tenta finalizar sem fazer clock-in
+        assertThrows(IllegalStateException.class, () -> {
+            service.clockOut(task.getId(), userId);
+        });
+    }
+
 }
