@@ -64,5 +64,44 @@ public class TaskServiceDB {
 
         return repository.save(task);
     }
+
+    public TaskEntity getTask(UUID taskId, UUID userId) {
+        return repository.findByIdAndUserId(taskId, userId)
+            .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+    }    
+    
+    public TaskEntity editTask(UUID taskId, String title, String description, LocalDateTime deadline, UUID userId) {
+        TaskEntity task = getTask(taskId, userId);
+    
+        if (title.isBlank()) {
+            throw new IllegalArgumentException("Cannot edit task with blank title");
+        }
+    
+        if (deadline.isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Cannot edit task with outdated deadline");
+        }
+    
+        task.setTitle(title);
+        task.setDescription(description);
+        task.setDeadline(deadline);
+    
+        return repository.save(task);
+    }
+
+    public void deleteTask(UUID id, UUID userId) {
+        TaskEntity task = getByIdAndUser(id, userId);
+        repository.delete(task);
+    }
+
+    public TaskEntity markAsCompleted(UUID id, UUID userId) {
+        TaskEntity task = getByIdAndUser(id, userId);
+    
+        if (task.getStatus() != TaskStatus.IN_PROGRESS) {
+            throw new IllegalStateException("Task must be in progress to be marked as completed");
+        }
+    
+        task.setStatus(TaskStatus.COMPLETED);
+        return repository.save(task);
+    }
     
 }
