@@ -104,4 +104,85 @@ public class TaskServiceDB {
         return repository.save(task);
     }
     
+    public List<TaskEntity> filterByStatus(String statusString, UUID userId) {
+        TaskStatus status;
+        try {
+            status = TaskStatus.valueOf(statusString.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid status: " + statusString);
+        }
+    
+        return repository.findAllByUserId(userId).stream()
+            .filter(task -> task.getStatus() == status)
+            .toList();
+    }
+
+    public boolean checkForTimeExceeded(UUID id, UUID userId) {
+        TaskEntity task = getByIdAndUser(id, userId);
+    
+        if (task.getStatus() == TaskStatus.IN_PROGRESS) {
+            long timeExceeded = java.time.Duration.between(task.getStartTime(), LocalDateTime.now()).toMinutes();
+            long tolerance = (long) (task.getEstimatedTime() * 0.10);
+            if (timeExceeded > task.getEstimatedTime() + tolerance) {
+                task.setStatus(TaskStatus.TIME_EXCEEDED);
+                task.setSuggestion("Please re-evaluate or adjust the task.");
+            } else {
+                task.setStatus(TaskStatus.TIME_EXCEEDED);
+                task.setSuggestion(null);
+            }
+            repository.save(task);
+        }
+    
+        return task.getStatus() == TaskStatus.TIME_EXCEEDED;
+    }
+    
+    public String checkAndNotifyTimeExceeded(UUID id, UUID userId) {
+        TaskEntity task = getByIdAndUser(id, userId);
+    
+        if (task.getStatus() == TaskStatus.IN_PROGRESS) {
+            long timeExceeded = java.time.Duration.between(task.getStartTime(), LocalDateTime.now()).toMinutes();
+            long tolerance = (long) (task.getEstimatedTime() * 0.10);
+    
+            if (timeExceeded > task.getEstimatedTime() + tolerance) {
+                task.setStatus(TaskStatus.TIME_EXCEEDED);
+                task.setSuggestion("Please re-evaluate or adjust the task.");
+            } else {
+                task.setStatus(TaskStatus.TIME_EXCEEDED);
+                task.setSuggestion(null);
+            }
+    
+            repository.save(task);
+        }
+    
+        if (task.getStatus() == TaskStatus.TIME_EXCEEDED) {
+            return task.getSuggestion() != null
+                    ? task.getSuggestion()
+                    : "Time exceeded! Please register the clock-out.";
+        }
+    
+        return "Task is within the estimated time.";
+    }
+
+    public String checkForClockOutForgotten(UUID id, UUID userId) {
+        TaskEntity task = getByIdAndUser(id, userId);
+    
+        if (task.getStatus() == TaskStatus.IN_PROGRESS &&
+            LocalDateTime.now().isAfter(task.getStartTime().plusMinutes(task.getEstimatedTime())) &&
+            task.getFinishTime() == null) {
+            return "You forgot to clock out. Please register the clock-out.";
+        }
+    
+        return "Task is within the estimated time or clock-out is already registered.";
+    }
+
+    public String checkForClockOutForgottenInCompletedTask(UUID id, UUID userId) {
+        TaskEntity task = getByIdAndUser(id, userId);
+    
+        if (task.getStatus() == TaskStatus.COMPLETED && task.getFinishTime() == null) {
+            return "Clock-out is no longer necessary as the task is already completed.";
+        }
+    
+        return "Clock-out is not forgotten or the task is not completed.";
+    }
+    
 }
