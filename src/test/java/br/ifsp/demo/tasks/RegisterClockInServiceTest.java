@@ -62,4 +62,19 @@ public class RegisterClockInServiceTest {
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("Only pending tasks can be started");
     }
+
+    @Test
+    @Tag("@UnitTest")
+    @Description("Should not allow clock-in in the future")
+    void shouldNotAllowClockInInTheFuture(){
+        TaskService taskService = new TaskService();
+        LocalDateTime deadline = LocalDateTime.now().plusDays(1);
+
+        Task task = taskService.createTask("Projeto", "Clock-in futuro", deadline, userId1);
+
+        LocalDateTime clockin = LocalDateTime.now().plusHours(1);
+        assertThatThrownBy(() -> taskService.clockIn(0, clockin, userId1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Start time cannot be in the future");
+    }
 }

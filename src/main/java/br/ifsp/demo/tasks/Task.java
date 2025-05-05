@@ -96,6 +96,7 @@ public class Task {
         if (startTime.isAfter(LocalDateTime.now())) {
             throw new IllegalArgumentException("Start time cannot be in the future");
         }
+
         this.startTime = startTime;
         this.status = TaskStatus.IN_PROGRESS;
     }
