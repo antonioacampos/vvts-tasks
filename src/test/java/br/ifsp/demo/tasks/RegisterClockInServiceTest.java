@@ -77,4 +77,18 @@ public class RegisterClockInServiceTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Start time cannot be in the future");
     }
+
+    @Test
+    @Tag("@UnitTest")
+    @Description("Should not allow clock-in null")
+    void shouldNotAllowClockInNull(){
+        TaskService taskService = new TaskService();
+        LocalDateTime deadline = LocalDateTime.now().plusDays(1);
+
+        Task task = taskService.createTask("Projeto", "Clock-in null", deadline, userId1);
+
+        assertThatThrownBy(() -> taskService.clockIn(0, null, userId1))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Start time cannot be null");
+    }
 }
