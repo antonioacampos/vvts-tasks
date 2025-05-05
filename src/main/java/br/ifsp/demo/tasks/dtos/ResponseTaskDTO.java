@@ -1,6 +1,7 @@
 package br.ifsp.demo.tasks.dtos;
 
 import br.ifsp.demo.tasks.Task;
+import br.ifsp.demo.tasks.TaskEntity;
 import br.ifsp.demo.tasks.TaskStatus;
 
 import java.time.LocalDateTime;
@@ -31,6 +32,21 @@ public record ResponseTaskDTO(
                 task.getEstimatedTime(),
                 task.getSuggestion(),
                 task.getUserId()
+        );
+    }
+
+    public ResponseTaskDTO(TaskEntity task){
+        this(
+            task.getTitle(),
+            task.getDescription(),
+            task.getDeadline(),
+            task.getStatus(),
+            task.getStartTime(),
+            task.getFinishTime(),
+            task.getTimeSpent(),
+            task.getEstimatedTime(),
+            task.getSuggestion(),
+            task.getUserId()
         );
     }
 
