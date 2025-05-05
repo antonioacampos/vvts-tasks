@@ -74,4 +74,89 @@ class TaskControllerDBTest {
                 .andExpect(jsonPath("$.title").value("Ler livro"))
                 .andExpect(jsonPath("$.status").value("PENDING"));
     }
+
+    @Test
+    void shouldEditTaskSuccessfully() throws Exception {
+        UUID userId = authService.getAuthenticatedUserId();
+
+        TaskEntity task = taskService.create(
+                "Tarefa Antiga",
+                "Descrição antiga",
+                LocalDateTime.now().plusDays(1),
+                45,
+                userId
+        );
+
+        CreateTaskDTO updated = new CreateTaskDTO(
+                "Tarefa Editada",
+                "Nova descrição",
+                LocalDateTime.now().plusDays(2),
+                90,
+                null
+        );
+
+        mockMvc.perform(put("/api/v1/task/edit/" + task.getId())
+                        .header("Authorization", "Bearer " + "<token_jwt_aqui>")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updated)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Tarefa Editada"))
+                .andExpect(jsonPath("$.description").value("Nova descrição"));
+    }
+
+    @Test
+    void shouldClockInSuccessfully() throws Exception {
+        UUID userId = authService.getAuthenticatedUserId();
+
+        TaskEntity task = taskService.create(
+                "Tarefa Clock-In",
+                "Descrição",
+                LocalDateTime.now().plusHours(2),
+                30,
+                userId
+        );
+
+        mockMvc.perform(put("/api/v1/task/clock-in/" + task.getId())
+                        .header("Authorization", "Bearer " + "<token_jwt_aqui>")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void shouldClockOutSuccessfully() throws Exception {
+        UUID userId = authService.getAuthenticatedUserId();
+
+        TaskEntity task = taskService.create(
+                "Tarefa Clock-Out",
+                "Descrição",
+                LocalDateTime.now().plusHours(2),
+                30,
+                userId
+        );
+
+        taskService.clockIn(task.getId(), userId);
+
+        mockMvc.perform(put("/api/v1/task/clock-out/" + task.getId())
+                        .header("Authorization", "Bearer " + "<token_jwt_aqui>")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void shouldDeleteTaskSuccessfully() throws Exception {
+        UUID userId = authService.getAuthenticatedUserId();
+
+        TaskEntity task = taskService.create(
+                "Tarefa para deletar",
+                "Descrição",
+                LocalDateTime.now().plusDays(1),
+                40,
+                userId
+        );
+
+        mockMvc.perform(delete("/api/v1/task/delete/" + task.getId())
+                        .header("Authorization", "Bearer " + "<token_jwt_aqui>"))
+                .andExpect(status().isNoContent());
+    }
+
 }
