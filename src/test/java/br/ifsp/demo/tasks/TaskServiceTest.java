@@ -346,4 +346,18 @@ class TaskServiceTest {
         assertThat(notification).isEqualTo("Task is within the estimated time.");
     }
 
+    @Test
+    @Tag("@UnitTest")
+    @Description("Should notify absence of check-in if get notification")
+    void shouldNotifyAbsenceOfCheckInIfGetNotification() {
+        TaskService taskService = new TaskService();
+
+        LocalDateTime deadline = LocalDateTime.now().plusDays(7);
+        taskService.createTask("task-name", "task with no check-in", deadline, userId1);
+
+        String notification = taskService.checkForClockOutForgotten(0, userId1);
+
+        assertThat(notification).isEqualTo("Task is within the estimated time or clock-out is already registered.");
+    }
+
 }
