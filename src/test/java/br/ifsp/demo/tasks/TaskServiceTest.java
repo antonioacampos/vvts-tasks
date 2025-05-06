@@ -360,4 +360,18 @@ class TaskServiceTest {
         assertThat(notification).isEqualTo("Task is within the estimated time or clock-out is already registered.");
     }
 
+    @Test
+    @Tag("@UnitTest")
+    @Description("Should notify that task is not completed if asked of clock out forgotten")
+    void shouldNotifyThatTaskIsNotCompletedIfAskedOfClockOutForgotten() {
+        TaskService taskService = new TaskService();
+
+        LocalDateTime deadline = LocalDateTime.now().plusDays(7);
+        taskService.createTask("task-name", "task with no check-in", deadline, userId1);
+
+        String notification = taskService.checkForClockOutForgottenInCompletedTask(0, userId1);
+
+        assertThat(notification).isEqualTo("Clock-out is not forgotten or the task is not completed.");
+    }
+
 }
