@@ -20,10 +20,12 @@ public class TaskService {
         return task;
     }
 
-    public Task editTask(int index, String anotherName, String anotherDescription, LocalDateTime localDateTime, UUID userId) {
+    public Task editTask(int index, String anotherTitle, String anotherDescription, LocalDateTime localDateTime, UUID userId) {
+        if(Objects.isNull(anotherTitle) || Objects.isNull(anotherDescription) || Objects.isNull(localDateTime) || Objects.isNull(userId))
+            throw new NullPointerException();
         Task task = findTaskByUserId(userId, index);
 
-        task.setTitle(anotherName);
+        task.setTitle(anotherTitle);
         task.setDescription(anotherDescription);
         task.setDeadline(localDateTime);
 
