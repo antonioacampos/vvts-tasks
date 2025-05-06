@@ -331,4 +331,19 @@ class TaskServiceTest {
 
         assertEquals("Clock-out is no longer necessary as the task is already completed.", notification, "The system should notify that the clock-out is not necessary as the task is already completed.");
     }
+
+    @Test
+    @Tag("@UnitTest")
+    @Description("Should notify that time is not exceeded if time is not exceeded")
+    void shouldNotifyThatTimeIsNotExceededIfTimeIsNotExceeded(){
+        TaskService taskService = new TaskService();
+
+        LocalDateTime deadline = LocalDateTime.now().plusDays(7);
+        taskService.createTask("task-name", "task with no time exceeded", deadline, userId1);
+
+        String notification = taskService.checkAndNotifyTimeExceeded(0, userId1);
+
+        assertThat(notification).isEqualTo("Task is within the estimated time.");
+    }
+
 }
