@@ -374,4 +374,40 @@ class TaskServiceTest {
         assertThat(notification).isEqualTo("Clock-out is not forgotten or the task is not completed.");
     }
 
+
+    @Test
+    @Tag("@UnitTest")
+    @Description("Should not permit creation of task with any null value")
+    void shouldNotPermitCreationOfTaskWithAnyNullValue() {
+        TaskService taskService = new TaskService();
+        LocalDateTime deadline = LocalDateTime.now().plusDays(7);
+
+        assertThatThrownBy(() -> taskService.createTask(null, "task with no title", deadline, userId1))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> taskService.createTask("Title with no description", null, deadline, userId1))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> taskService.createTask("Task with no deadline", "Task with no deadline", null, userId1))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> taskService.createTask("Task with no user", "Task with no user", deadline, null))
+                .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    @Tag("@UnitTest")
+    @Description("Should not permit edition of task with any null value")
+    void shouldNotPermitEditionOfTaskWithAnyNullValue() {
+        TaskService taskService = new TaskService();
+        LocalDateTime deadline = LocalDateTime.now().plusDays(7);
+
+        Task task = taskService.createTask("Task", "Task to be edited", deadline, userId1);
+
+        assertThatThrownBy(() -> taskService.editTask( 0, null, "Task", deadline, userId1))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> taskService.editTask( 0, "Task", null, deadline, userId1))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> taskService.editTask( 0, "Task", "Task", null, userId1))
+                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> taskService.editTask( 0, "Task", "Task", deadline, null))
+                .isInstanceOf(NullPointerException.class);
+    }
 }
