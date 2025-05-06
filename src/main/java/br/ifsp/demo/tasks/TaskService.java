@@ -12,6 +12,9 @@ public class TaskService {
     private List<Task> tasks= new ArrayList<>();
 
     public Task createTask(String title, String description, LocalDateTime deadline, UUID userId) {
+        if(Objects.isNull(title) || Objects.isNull(description) || Objects.isNull(deadline) || Objects.isNull(userId))
+            throw new NullPointerException();
+
         Task task = new Task(title, description, deadline, userId);
         tasks.add(task);
         return task;
