@@ -451,8 +451,11 @@ class TaskServiceTest {
     @Description("Should throw exception for negative user Id")
     void shouldThrowExceptionForNegativeUserId() {
         TaskService taskService = new TaskService();
+        UUID userId = UUID.randomUUID();
+        LocalDateTime deadline = LocalDateTime.now().plusDays(7);
+        Task task = taskService.createTask("Task", "Task for user", deadline, userId);
 
         assertThrows(IndexOutOfBoundsException.class, () ->
-                taskService.getTask(0, UUID.randomUUID()));
+                taskService.getTask(-1, userId));
     }
 }
