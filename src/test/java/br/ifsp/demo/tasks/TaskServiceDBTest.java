@@ -74,6 +74,8 @@ class TaskServiceDBTest {
 
     @Test
     @Tag("TDD")
+    @Tag("UnitTest")
+    @Tag("Functional")
     void shouldStartTaskIfPending() {
         UUID userId = UUID.randomUUID();
         // given
@@ -95,6 +97,8 @@ class TaskServiceDBTest {
 
     @Test
     @Tag("TDD")
+    @Tag("UnitTest")
+    @Tag("Functional")
     void shouldNotStartTaskIfNotPending() {
         UUID userId = UUID.randomUUID();
         TaskEntity task = service.create("Tarefa", "desc", LocalDateTime.now().plusHours(1), 30, userId);
@@ -110,6 +114,8 @@ class TaskServiceDBTest {
 
     @Test
     @Tag("TDD")
+    @Tag("UnitTest")
+    @Tag("Functional")
     void shouldFinishTaskIfInProgress() {
         UUID userId = UUID.randomUUID();
         TaskEntity task = service.create("Ler livro", "Capítulo 3", LocalDateTime.now().plusHours(1), 30, userId);
@@ -127,6 +133,8 @@ class TaskServiceDBTest {
 
     @Test
     @Tag("TDD")
+    @Tag("UnitTest")
+    @Tag("Functional")
     void shouldNotFinishIfNotInProgress() {
         UUID userId = UUID.randomUUID();
         TaskEntity task = service.create("Escrever relatório", "Página 2", LocalDateTime.now().plusHours(2), 45, userId);

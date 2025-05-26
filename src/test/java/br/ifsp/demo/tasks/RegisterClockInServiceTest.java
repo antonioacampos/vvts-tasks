@@ -16,6 +16,7 @@ public class RegisterClockInServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("C02/US008 - Should register clock-in and update task status to IN_PROGRESS")
     void shouldRegisterClockInAndUpdateStatus() {
         TaskService taskService = new TaskService();
@@ -32,6 +33,7 @@ public class RegisterClockInServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("C01/US008 - Should throw error when trying to clock-in a completed task")
     void shouldThrowErrorWhenClockingInCompletedTask() {
         TaskService taskService = new TaskService();
@@ -49,6 +51,7 @@ public class RegisterClockInServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("C03/US008 - Should not allow clock-in if task is already in progress")
     void shouldNotAllowClockInIfTaskIsAlreadyInProgress() {
         TaskService taskService = new TaskService();
@@ -65,6 +68,7 @@ public class RegisterClockInServiceTest {
 
     @Test
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should not allow clock-in in the future")
     void shouldNotAllowClockInInTheFuture(){
         TaskService taskService = new TaskService();
@@ -80,6 +84,7 @@ public class RegisterClockInServiceTest {
 
     @Test
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should not allow clock-in null")
     void shouldNotAllowClockInNull(){
         TaskService taskService = new TaskService();

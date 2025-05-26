@@ -16,6 +16,7 @@ public class FilterTasksByStatusServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("C02/US007 - Should return tasks filtered by valid status")
     void shouldReturnTasksFilteredByValidStatus() {
         TaskService taskService = new TaskService();
@@ -35,6 +36,7 @@ public class FilterTasksByStatusServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("C01/US007 - Should throw error for invalid status")
     void shouldThrowErrorForInvalidStatus() {
         TaskService taskService = new TaskService();

@@ -17,6 +17,7 @@ class TaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should create new task with informed data")
     void ShouldCreateNewTaskWithInformedData() {
         //C02/US001
@@ -34,6 +35,7 @@ class TaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should not create task with blank title")
     void ShouldNotCreateTaskWithBlankTitle() {
         //C01/US001
@@ -48,6 +50,7 @@ class TaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should not create task with outdated deadline")
     void ShouldNotCreateTaskWithOutdatedDeadline() {
         //C03/US001
@@ -62,6 +65,7 @@ class TaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should be able to edit tasks")
     void ShouldBeAbleToEditTasks() {
         //C02/US002
@@ -82,6 +86,7 @@ class TaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should not be able to edit with the same check as creating")
     void ShouldNotBeAbleToEditWithTheSameCheckAsCreating() {
         //C01/US002
@@ -102,6 +107,7 @@ class TaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should give exception if index out of bounds")
     void ShouldGiveExceptionIfIndexOutOfBounds() {
         //C03/US002
@@ -119,6 +125,7 @@ class TaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should return information of all registered tasks")
     void ShouldReturnInformationOfAllRegisteredTasks() {
 
@@ -152,6 +159,7 @@ class TaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should delete a task")
     void ShouldDeleteATask() {
         TaskService taskService = new TaskService();
@@ -168,6 +176,7 @@ class TaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should return the spent time when clock-out")
     void ShouldReturnSpentTimeWhenClockOut() {
         // C01/US009
@@ -190,6 +199,7 @@ class TaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should return an error when clock-out without clock-in")
     void shouldReturnErrorWhenClockOutWithoutClockIn() {
         // C02/US009
@@ -205,6 +215,7 @@ class TaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should return exceeded time when clockout not registered")
     void ShouldNotifyTimeExceededWhenClockOutNotRegistered() {
         TaskService taskService = new TaskService();
@@ -227,6 +238,7 @@ class TaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should notify the time exceeded when task is consulted")
     void ShouldNotifyTimeExceededWhenTaskIsConsulted() {
         TaskService taskService = new TaskService();
@@ -249,6 +261,7 @@ class TaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should not suggest reevaluation if time exceeded is within tolerance")
     void ShouldNotSuggestReevaluationIfTimeExceededIsWithinTolerance() {
         TaskService taskService = new TaskService();
@@ -270,6 +283,7 @@ class TaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should suggest reevaluation when time exceeded is above tolerance")
     void ShouldSuggestReevaluationWhenTimeExceededIsAboveTolerance() {
         TaskService taskService = new TaskService();
@@ -292,6 +306,7 @@ class TaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should notify clock out forgotten when the time is exceeded")
     void ShouldNotifyClockOutForgottenWhenTimeExceeded() {
         TaskService taskService = new TaskService();
@@ -313,6 +328,7 @@ class TaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should notify clock out not necessary when the task is completed")
     void ShouldNotifyClockOutNotNecessaryWhenTaskIsCompleted() {
         TaskService taskService = new TaskService();
@@ -334,6 +350,7 @@ class TaskServiceTest {
 
     @Test
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should notify that time is not exceeded if time is not exceeded")
     void shouldNotifyThatTimeIsNotExceededIfTimeIsNotExceeded(){
         TaskService taskService = new TaskService();
@@ -348,6 +365,7 @@ class TaskServiceTest {
 
     @Test
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should notify absence of check-in if get notification")
     void shouldNotifyAbsenceOfCheckInIfGetNotification() {
         TaskService taskService = new TaskService();
@@ -362,6 +380,7 @@ class TaskServiceTest {
 
     @Test
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should notify that task is not completed if asked of clock out forgotten")
     void shouldNotifyThatTaskIsNotCompletedIfAskedOfClockOutForgotten() {
         TaskService taskService = new TaskService();
@@ -377,6 +396,7 @@ class TaskServiceTest {
 
     @Test
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should not permit creation of task with any null value")
     void shouldNotPermitCreationOfTaskWithAnyNullValue() {
         TaskService taskService = new TaskService();
@@ -394,6 +414,7 @@ class TaskServiceTest {
 
     @Test
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("Should not permit edition of task with any null value")
     void shouldNotPermitEditionOfTaskWithAnyNullValue() {
         TaskService taskService = new TaskService();

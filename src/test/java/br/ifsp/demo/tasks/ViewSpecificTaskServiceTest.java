@@ -15,6 +15,7 @@ public class ViewSpecificTaskServiceTest {
     @Test
     @Tag("TDD")
     @Tag("UnitTest")
+    @Tag("Functional")
     @Description("C01/US005 - Should return a specific task by index")
     void shouldReturnSpecificTaskByIndex() {
         TaskService taskService = new TaskService();
