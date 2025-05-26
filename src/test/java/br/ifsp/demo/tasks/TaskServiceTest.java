@@ -431,4 +431,17 @@ class TaskServiceTest {
         assertThatThrownBy(() -> taskService.editTask( 0, "Task", "Task", deadline, null))
                 .isInstanceOf(NullPointerException.class);
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Structural")
+    @Description("Should return false when time is not exceeded")
+    void shouldReturnFalseWhenTimeIsNotExceeded() {
+        TaskService taskService = new TaskService();
+        LocalDateTime deadline = LocalDateTime.now().plusDays(7);
+
+        Task task = taskService.createTask("Task", "Task not exceeded", deadline, userId1);
+
+       assertThat(taskService.checkForTimeExceeded(0, userId1)).isFalse();
+    }
 }
