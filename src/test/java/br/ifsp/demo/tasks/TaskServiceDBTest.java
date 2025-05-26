@@ -20,8 +20,10 @@ class TaskServiceDBTest {
 
     @Autowired
     private JpaTaskRepository repository;
-    
+
     @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
     void createTask_shouldPersistSuccessfully() {
         UUID userId = UUID.randomUUID();
         TaskEntity task = service.create(
@@ -38,6 +40,8 @@ class TaskServiceDBTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
     void getAllByUser_shouldReturnOnlyUserTasks() {
         UUID user1 = UUID.randomUUID();
         UUID user2 = UUID.randomUUID();
@@ -51,6 +55,8 @@ class TaskServiceDBTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
     void getByIdAndUser_shouldReturnCorrectTask() {
         UUID userId = UUID.randomUUID();
         TaskEntity task = service.create("Buscar café", "Desc", LocalDateTime.now(), 1000, userId);
@@ -61,6 +67,8 @@ class TaskServiceDBTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
     void getByIdAndUser_shouldThrowWhenNotFound() {
         UUID userId = UUID.randomUUID();
         UUID fakeId = UUID.randomUUID();
