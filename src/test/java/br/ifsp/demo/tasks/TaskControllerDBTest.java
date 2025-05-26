@@ -5,6 +5,7 @@ import br.ifsp.demo.security.user.JpaUserRepository;
 import br.ifsp.demo.tasks.dtos.CreateTaskDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -56,6 +57,8 @@ class TaskControllerDBTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
     void shouldCreateTaskSuccessfully() throws Exception {
         mockMvc.perform(post("/api/v1/task/create")
                         .header("Authorization", token)
@@ -67,6 +70,8 @@ class TaskControllerDBTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
     void shouldReturnTaskById() throws Exception {
         TaskEntity task = taskService.create("Ler livro", "Capítulo 1",
                 LocalDateTime.now().plusHours(2), 30, userId);
@@ -78,6 +83,8 @@ class TaskControllerDBTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
     void shouldGetAllTasks() throws Exception {
         mockMvc.perform(get("/api/v1/task/get-all")
                         .header("Authorization", token))
@@ -85,6 +92,8 @@ class TaskControllerDBTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
     void shouldEditTaskSuccessfully() throws Exception {
         TaskEntity task = taskService.create("Tarefa Antiga", "Desc",
                 LocalDateTime.now().plusDays(1), 45, userId);
@@ -101,6 +110,8 @@ class TaskControllerDBTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
     void shouldDeleteTaskSuccessfully() throws Exception {
         TaskEntity task = taskService.create("Para deletar", "Desc",
                 LocalDateTime.now().plusDays(1), 40, userId);
@@ -111,6 +122,8 @@ class TaskControllerDBTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
     void shouldClockInAndOutSuccessfully() throws Exception {
         TaskEntity task = taskService.create("Clock Test", "Desc",
                 LocalDateTime.now().plusHours(1), 30, userId);
@@ -125,6 +138,8 @@ class TaskControllerDBTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
     void shouldMarkAsCompleted() throws Exception {
         TaskEntity task = taskService.create("Para Completar", "Desc",
                 LocalDateTime.now().plusHours(1), 20, userId);
@@ -136,6 +151,8 @@ class TaskControllerDBTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
     void shouldReturnSpentTime() throws Exception {
         TaskEntity task = taskService.create("Spent", "time",
                 LocalDateTime.now().plusHours(1), 20, userId);
@@ -149,6 +166,8 @@ class TaskControllerDBTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
     void shouldNotifyTimeExceeded() throws Exception {
         TaskEntity task = taskService.create("Time Exceeded", "Desc",
                 LocalDateTime.now().plusHours(1), 1, userId);
@@ -163,6 +182,8 @@ class TaskControllerDBTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
     void shouldCheckTimeExceeded() throws Exception {
         TaskEntity task = taskService.create("Check Exceeded", "Teste",
                 LocalDateTime.now().plusHours(1), 5, userId);
@@ -177,6 +198,8 @@ class TaskControllerDBTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
     void shouldCheckClockOutForgotten() throws Exception {
         TaskEntity task = taskService.create("ClockOut Forgotten", "Teste",
                 LocalDateTime.now().plusHours(1), 5, userId);
@@ -192,6 +215,8 @@ class TaskControllerDBTest {
     }
 
     @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
     void shouldCheckClockOutForgottenCompletedTask() throws Exception {
         TaskEntity task = taskService.create("Completed no finishTime", "Teste",
                 LocalDateTime.now().plusHours(1), 5, userId);
