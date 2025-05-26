@@ -14,8 +14,8 @@ public class RegisterClockInServiceTest {
     UUID userId1 = UUID.randomUUID();
 
     @Test
-    @Tag("@TDD")
-    @Tag("@UnitTest")
+    @Tag("TDD")
+    @Tag("UnitTest")
     @Description("C02/US008 - Should register clock-in and update task status to IN_PROGRESS")
     void shouldRegisterClockInAndUpdateStatus() {
         TaskService taskService = new TaskService();
@@ -30,8 +30,8 @@ public class RegisterClockInServiceTest {
     }
 
     @Test
-    @Tag("@TDD")
-    @Tag("@UnitTest")
+    @Tag("TDD")
+    @Tag("UnitTest")
     @Description("C01/US008 - Should throw error when trying to clock-in a completed task")
     void shouldThrowErrorWhenClockingInCompletedTask() {
         TaskService taskService = new TaskService();
@@ -47,8 +47,8 @@ public class RegisterClockInServiceTest {
     }
 
     @Test
-    @Tag("@TDD")
-    @Tag("@UnitTest")
+    @Tag("TDD")
+    @Tag("UnitTest")
     @Description("C03/US008 - Should not allow clock-in if task is already in progress")
     void shouldNotAllowClockInIfTaskIsAlreadyInProgress() {
         TaskService taskService = new TaskService();
@@ -64,7 +64,7 @@ public class RegisterClockInServiceTest {
     }
 
     @Test
-    @Tag("@UnitTest")
+    @Tag("UnitTest")
     @Description("Should not allow clock-in in the future")
     void shouldNotAllowClockInInTheFuture(){
         TaskService taskService = new TaskService();
@@ -79,7 +79,7 @@ public class RegisterClockInServiceTest {
     }
 
     @Test
-    @Tag("@UnitTest")
+    @Tag("UnitTest")
     @Description("Should not allow clock-in null")
     void shouldNotAllowClockInNull(){
         TaskService taskService = new TaskService();

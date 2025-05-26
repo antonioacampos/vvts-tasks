@@ -14,8 +14,8 @@ public class FilterTasksByStatusServiceTest {
     UUID userId1 = UUID.randomUUID();
 
     @Test
-    @Tag("@TDD")
-    @Tag("@UnitTest")
+    @Tag("TDD")
+    @Tag("UnitTest")
     @Description("C02/US007 - Should return tasks filtered by valid status")
     void shouldReturnTasksFilteredByValidStatus() {
         TaskService taskService = new TaskService();
@@ -33,8 +33,8 @@ public class FilterTasksByStatusServiceTest {
         assertThat(result.get(0).getTitle()).isEqualTo("Estudar");
     }
     @Test
-    @Tag("@TDD")
-    @Tag("@UnitTest")
+    @Tag("TDD")
+    @Tag("UnitTest")
     @Description("C01/US007 - Should throw error for invalid status")
     void shouldThrowErrorForInvalidStatus() {
         TaskService taskService = new TaskService();

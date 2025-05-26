@@ -8,6 +8,6 @@ import org.junit.platform.suite.api.SuiteDisplayName;
 @Suite
 @SelectPackages("br.ifsp.demo.tasks")
 @SuiteDisplayName("All TDD tests")
-@IncludeTags({"@TDD"})
+@IncludeTags({"TDD"})
 public class AllTDDTests {
 }

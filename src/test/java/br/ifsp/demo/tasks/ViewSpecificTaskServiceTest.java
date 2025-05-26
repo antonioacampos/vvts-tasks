@@ -13,8 +13,8 @@ public class ViewSpecificTaskServiceTest {
     UUID userId1 = UUID.randomUUID();
 
     @Test
-    @Tag("@TDD")
-    @Tag("@UnitTest")
+    @Tag("TDD")
+    @Tag("UnitTest")
     @Description("C01/US005 - Should return a specific task by index")
     void shouldReturnSpecificTaskByIndex() {
         TaskService taskService = new TaskService();

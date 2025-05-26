@@ -14,8 +14,8 @@ public class MarkTaskAsCompletedServiceTest {
     UUID userId1 = UUID.randomUUID();
 
     @Test
-    @Tag("@TDD")
-    @Tag("@UnitTest")
+    @Tag("TDD")
+    @Tag("UnitTest")
     @Description("C01/US006 - Should mark task as completed if it is in progress")
     void shouldMarkTaskAsCompletedIfInProgress() {
         TaskService taskService = new TaskService();
@@ -30,8 +30,8 @@ public class MarkTaskAsCompletedServiceTest {
     }
 
     @Test
-    @Tag("@TDD")
-    @Tag("@UnitTest")
+    @Tag("TDD")
+    @Tag("UnitTest")
     @Description("C02/US006 - Should not allow completing task if status is not IN_PROGRESS")
     void shouldNotAllowCompletionIfTaskIsNotInProgress() {
         TaskService taskService = new TaskService();
