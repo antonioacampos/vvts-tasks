@@ -1,4 +1,4 @@
-package br.ifsp.demo.tasks;
+package br.ifsp.demo.suits;
 
 import org.junit.platform.suite.api.IncludeTags;
 import org.junit.platform.suite.api.SelectPackages;
