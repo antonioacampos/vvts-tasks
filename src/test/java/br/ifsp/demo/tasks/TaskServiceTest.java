@@ -444,4 +444,15 @@ class TaskServiceTest {
 
        assertThat(taskService.checkForTimeExceeded(0, userId1)).isFalse();
     }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Structural")
+    @Description("Should throw exception for negative user Id")
+    void shouldThrowExceptionForNegativeUserId() {
+        TaskService taskService = new TaskService();
+
+        assertThrows(IndexOutOfBoundsException.class, () ->
+                taskService.getTask(0, UUID.randomUUID()));
+    }
 }
