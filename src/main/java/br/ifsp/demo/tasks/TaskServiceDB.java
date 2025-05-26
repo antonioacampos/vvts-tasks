@@ -1,5 +1,6 @@
 package br.ifsp.demo.tasks;
 
+import br.ifsp.demo.tasks.dtos.CreateTaskDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,15 +14,16 @@ public class TaskServiceDB {
 
     private final JpaTaskRepository repository;
 
-    public TaskEntity create(String title, String description, LocalDateTime deadline, long estimatedTime, UUID userId) {
+    public TaskEntity create(CreateTaskDTO createTaskDTO, UUID userId) {
         TaskEntity task = TaskEntity.builder()
-            .title(title)
-            .description(description)
-            .deadline(deadline)
-            .estimatedTime(estimatedTime)
-            .userId(userId)
-            .status(TaskStatus.PENDING)
-            .build();
+                .title(createTaskDTO.title())
+                .description(createTaskDTO.description())
+                .deadline(createTaskDTO.deadline())
+                .estimatedTime(createTaskDTO.estimatedTime())
+                .userId(userId)
+                .status(TaskStatus.PENDING)
+                .suggestion(createTaskDTO.suggestion())
+                .build();
         return repository.save(task);
     }
 
@@ -35,7 +37,7 @@ public class TaskServiceDB {
 
     public TaskEntity getByIdAndUser(UUID id, UUID userId) {
         return repository.findByIdAndUserId(id, userId).orElseThrow(
-            () -> new IllegalArgumentException("Task not found")
+                () -> new IllegalArgumentException("Task not found")
         );
     }
 
@@ -71,7 +73,7 @@ public class TaskServiceDB {
 
     public TaskEntity getTask(UUID taskId, UUID userId) {
         return repository.findByIdAndUserId(taskId, userId)
-            .orElseThrow(() -> new IllegalArgumentException("Task not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Task not found"));
     }
 
     public TaskEntity editTask(UUID taskId, String title, String description, LocalDateTime deadline, UUID userId) {
@@ -117,8 +119,8 @@ public class TaskServiceDB {
         }
 
         return repository.findAllByUserId(userId).stream()
-            .filter(task -> task.getStatus() == status)
-            .toList();
+                .filter(task -> task.getStatus() == status)
+                .toList();
     }
 
     public boolean checkForTimeExceeded(UUID id, UUID userId) {
@@ -160,8 +162,8 @@ public class TaskServiceDB {
 
         if (task.getStatus() == TaskStatus.TIME_EXCEEDED) {
             return task.getSuggestion() != null
-                ? task.getSuggestion()
-                : "Time exceeded! Please register the clock-out.";
+                    ? task.getSuggestion()
+                    : "Time exceeded! Please register the clock-out.";
         }
 
         return "Task is within the estimated time.";
@@ -171,8 +173,8 @@ public class TaskServiceDB {
         TaskEntity task = getByIdAndUser(id, userId);
 
         if (task.getStatus() == TaskStatus.IN_PROGRESS &&
-            LocalDateTime.now().isAfter(task.getStartTime().plusMinutes(task.getEstimatedTime())) &&
-            task.getFinishTime() == null) {
+                LocalDateTime.now().isAfter(task.getStartTime().plusMinutes(task.getEstimatedTime())) &&
+                task.getFinishTime() == null) {
             return "You forgot to clock out. Please register the clock-out.";
         }
 
