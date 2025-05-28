@@ -23,16 +23,12 @@ public class TaskService {
         return convertToTask(taskEntity);
     }
 
-    public Task editTask(int index, String anotherTitle, String anotherDescription, LocalDateTime localDateTime, UUID userId) {
-        if(Objects.isNull(anotherTitle) || Objects.isNull(anotherDescription) || Objects.isNull(localDateTime) || Objects.isNull(userId))
+    public Task editTask(UUID taskId, String anotherTitle, String anotherDescription, LocalDateTime deadline, UUID userId, LocalDateTime currentTime) {
+        if(Objects.isNull(anotherTitle) || Objects.isNull(anotherDescription) || Objects.isNull(deadline) || Objects.isNull(userId) || Objects.isNull(currentTime))
             throw new NullPointerException();
-        Task task = findTaskByUserId(userId, index);
 
-        task.setTitle(anotherTitle);
-        task.setDescription(anotherDescription);
-        task.setDeadline(localDateTime);
-
-        return task;
+        TaskEntity taskEntity = taskServiceDB.editTask(taskId, anotherTitle, anotherDescription, deadline, userId, currentTime);
+        return convertToTask(taskEntity);
     }
 
     public String getAllInformation(UUID userId) {
