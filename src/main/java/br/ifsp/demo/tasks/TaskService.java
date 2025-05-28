@@ -1,4 +1,5 @@
 package br.ifsp.demo.tasks;
+import br.ifsp.demo.tasks.dtos.CreateTaskDTO;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -17,8 +18,8 @@ public class TaskService {
         if(Objects.isNull(title) || Objects.isNull(description) || Objects.isNull(deadline) || Objects.isNull(userId))
             throw new NullPointerException();
 
-        Task task = new Task(title, description, deadline, userId);
-        tasks.add(task);
+        CreateTaskDTO createTaskDTO = new CreateTaskDTO(title, description, deadline, estimatedTime, null);
+        TaskEntity taskEntity = taskServiceDB.create(createTaskDTO, userId);
         return task;
     }
 
