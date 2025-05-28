@@ -31,7 +31,7 @@ public class MarkTaskAsCompletedServiceTest {
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
         Task task = taskService.createTask("Estudar", "Revisar VVTS", deadline, userId1);
-        task.setStatus(TaskStatus.IN_PROGRESS);
+        taskService.clockIn(task.getId(), LocalDateTime.now(), userId1);
 
         taskService.markAsCompleted(0, userId1);
 

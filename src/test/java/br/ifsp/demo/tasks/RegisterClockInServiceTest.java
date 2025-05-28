@@ -48,8 +48,8 @@ public class RegisterClockInServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
-        Task task = taskService.createTask("Estudar", "Matéria X", deadline, userId1);
-        task.setStatus(TaskStatus.COMPLETED);
+        taskService.clockIn(task.getId(), LocalDateTime.now(), userId1);
+        taskService.clockOut(task.getId(), LocalDateTime.now().plusHours(1), userId1);
 
         LocalDateTime startTime = LocalDateTime.now();
         org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy(() -> taskService.clockIn(0, startTime, userId1))
@@ -67,7 +67,7 @@ public class RegisterClockInServiceTest {
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
         Task task = taskService.createTask("Projeto", "Clock-in duplo", deadline, userId1);
-        task.setStatus(TaskStatus.IN_PROGRESS);
+        taskService.clockIn(task.getId(), LocalDateTime.now(), userId1);
 
         LocalDateTime startTime = LocalDateTime.now();
         assertThatThrownBy(() -> taskService.clockIn(0, startTime, userId1))
