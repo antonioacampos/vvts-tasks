@@ -14,13 +14,13 @@ public class TaskService {
 
     private final TaskServiceDB taskServiceDB;
 
-    public Task createTask(String title, String description, LocalDateTime deadline, UUID userId) {
+    public Task createTask(String title, String description, LocalDateTime deadline, long estimatedTime, UUID userId) {
         if(Objects.isNull(title) || Objects.isNull(description) || Objects.isNull(deadline) || Objects.isNull(userId))
             throw new NullPointerException();
 
         CreateTaskDTO createTaskDTO = new CreateTaskDTO(title, description, deadline, estimatedTime, null);
         TaskEntity taskEntity = taskServiceDB.create(createTaskDTO, userId);
-        return task;
+        return convertToTask(taskEntity);
     }
 
     public Task editTask(int index, String anotherTitle, String anotherDescription, LocalDateTime localDateTime, UUID userId) {
