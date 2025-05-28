@@ -30,10 +30,10 @@ public class ViewSpecificTaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
-        taskService.createTask("Estudar", "Fazer revisão de VVTS", deadline, userId1);
-        taskService.createTask("Ler", "Capítulo 4", deadline.plusDays(1), userId1);
+        Task task1 = taskService.createTask("Estudar", "Fazer revisão de VVTS", deadline, 20, userId1);
+        Task task2 = taskService.createTask("Ler", "Capítulo 4", deadline.plusDays(1), 20, userId1);
 
-        Task task = taskService.getTask(1, userId1);
+        Task task = taskService.getTask(task2.getId(), userId1);
 
         assertThat(task.getTitle()).isEqualTo("Ler");
         assertThat(task.getDescription()).isEqualTo("Capítulo 4");

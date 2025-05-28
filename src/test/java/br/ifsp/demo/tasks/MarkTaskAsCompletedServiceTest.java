@@ -33,7 +33,7 @@ public class MarkTaskAsCompletedServiceTest {
         Task task = taskService.createTask("Estudar", "Revisar VVTS", deadline, userId1);
         taskService.clockIn(task.getId(), LocalDateTime.now(), userId1);
 
-        taskService.markAsCompleted(0, userId1);
+        taskService.markAsCompleted(task.getId(), userId1);
 
         assertThat(task.getStatus()).isEqualTo(TaskStatus.COMPLETED);
     }
@@ -50,7 +50,7 @@ public class MarkTaskAsCompletedServiceTest {
         Task task = taskService.createTask("Estudar", "Fazer resumo", deadline, userId1);
         task.setStatus(TaskStatus.PENDING);
 
-        assertThatThrownBy(() -> taskService.markAsCompleted(0, userId1))
+        assertThatThrownBy(() -> taskService.markAsCompleted(task.getId(), userId1))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("Task must be in progress to be marked as completed");
     }

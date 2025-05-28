@@ -83,7 +83,7 @@ class TaskServiceTest {
 
         Task task = taskService.createTask("Name", "Description", dateTime, userId1);
 
-        Task modTask = taskService.editTask(0, "Another name", "Another Description", dateTime.plusHours(5), userId1);
+        Task modTask = taskService.editTask(task.getId(), "Another name", "Another Description", dateTime.plusHours(5), userId1, LocalDateTime.now());
 
         assertThat(modTask.getTitle()).isEqualTo("Another name");
         assertThat(modTask.getDescription()).isEqualTo("Another Description");
@@ -103,11 +103,11 @@ class TaskServiceTest {
 
         Task task = taskService.createTask("Name", "Description", dateTime, userId1);
 
-        assertThatThrownBy(() -> taskService.editTask(0, task.getTitle(), task.getDescription(), dateTime.minusHours(20), userId1))
+        assertThatThrownBy(() -> taskService.editTask(task.getId(), task.getTitle(), task.getDescription(), dateTime.minusHours(20), userId1, LocalDateTime.now()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cannot edit task with outdated deadline");
 
-        assertThatThrownBy(() -> taskService.editTask(0, " ", task.getDescription(), task.getDeadline(), userId1))
+        assertThatThrownBy(() -> taskService.editTask(task.getId(), " ", task.getDescription(), task.getDeadline(), userId1, LocalDateTime.now()))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cannot edit task with blank title");
     }
@@ -173,8 +173,8 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
 
-        taskService.createTask("Name 1", "Description", dateTime, userId1);
-        taskService.deleteTask(0, userId1);
+        Task task = taskService.createTask("Name 1", "Description", dateTime, 20, userId1);
+        taskService.deleteTask(task.getId(), userId1);
 
         String information = taskService.getAllInformation(userId1);
 
@@ -191,17 +191,17 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.of(2025, 11, 1, 12, 0);
-        taskService.createTask("task-name", "task-desc", deadline, userId1);
+        Task task = taskService.createTask("task-name", "task-desc", deadline, 20, userId1);
 
         LocalDateTime startTime = LocalDateTime.now();
-        taskService.clockIn(0, startTime, userId1);
+        taskService.clockIn(task.getId(), startTime, userId1);
 
         int timeToCompleteTask = 60;
         LocalDateTime finishTime = LocalDateTime.now().plusMinutes(timeToCompleteTask);
 
-        taskService.clockOut(0, finishTime, userId1);
+        taskService.clockOut(task.getId(), finishTime, userId1);
 
-        assertEquals(timeToCompleteTask, taskService.getSpentTime(0, userId1));
+        assertEquals(timeToCompleteTask, taskService.getSpentTime(task.getId(), userId1));
     }
 
     @Test
@@ -214,10 +214,10 @@ class TaskServiceTest {
 
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.of(2025, 11, 1, 12, 0);
-        taskService.createTask("task-name", "task-desc", deadline, userId1);
+        Task task = taskService.createTask("task-name", "task-desc", deadline, 20, userId1);
         LocalDateTime finishTime = LocalDateTime.of(2025, 12, 2, 2, 2);
 
-        assertThrows(IllegalStateException.class, () -> taskService.clockOut(0, finishTime, userId1));
+        assertThrows(IllegalStateException.class, () -> taskService.clockOut(task.getId(), finishTime, userId1));
     }
 
     @Test
@@ -229,15 +229,15 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
-        Task task = taskService.createTask("task-name", "task-desc", deadline, userId1);
+        Task task = taskService.createTask("task-name", "task-desc", deadline, 20, userId1);
 
         long estimatedTime = 60;
         task.setEstimatedTime(estimatedTime);
 
         LocalDateTime startTime = LocalDateTime.now().minusMinutes(90);
-        taskService.clockIn(0, startTime, userId1);
+        taskService.clockIn(task.getId(), startTime, userId1);
 
-        boolean isTimeExceeded = taskService.checkForTimeExceeded(0, userId1);
+        boolean isTimeExceeded = taskService.checkForTimeExceeded(task.getId(), userId1, LocalDateTime.now());
 
         assertTrue(isTimeExceeded, "Task must be setted to 'exceeded time'.");
         assertEquals(TaskStatus.TIME_EXCEEDED, task.getStatus(), "Task status must be 'Time exceeded'.");
@@ -258,9 +258,9 @@ class TaskServiceTest {
         task.setEstimatedTime(estimatedTime);
 
         LocalDateTime startTime = LocalDateTime.now().minusMinutes(65);
-        taskService.clockIn(0, startTime, userId1);
+        taskService.clockIn(task.getId(), startTime, userId1);
 
-        String notification = taskService.checkAndNotifyTimeExceeded(0, userId1);
+        String notification = taskService.checkAndNotifyTimeExceeded(task.getId(), userId1, LocalDateTime.now());
 
         assertEquals("Time exceeded! Please register the clock-out.", notification, "The system must notify that the time is exceeded.");
         assertEquals(TaskStatus.TIME_EXCEEDED, task.getStatus(), "The task status must be 'Time Exceeded'.");
@@ -281,8 +281,8 @@ class TaskServiceTest {
         task.setEstimatedTime(estimatedTime);
 
         LocalDateTime startTime = LocalDateTime.now().minusMinutes(65);
-        taskService.clockIn(0, startTime, userId1);
-        String notification = taskService.checkAndNotifyTimeExceeded(0, userId1);
+        taskService.clockIn(task.getId(), startTime, userId1);
+        String notification = taskService.checkAndNotifyTimeExceeded(task.getId(), userId1, LocalDateTime.now());
 
         assertEquals("Time exceeded! Please register the clock-out.", notification, "The system must notify that the time is exceeded without suggesting re-evaluation.");
         assertNull(task.getSuggestion(), "The system should not suggest re-evaluation when the time exceeded is within tolerance.");
@@ -303,9 +303,9 @@ class TaskServiceTest {
         task.setEstimatedTime(estimatedTime);
 
         LocalDateTime startTime = LocalDateTime.now().minusMinutes(120);
-        taskService.clockIn(0, startTime, userId1);
+        taskService.clockIn(task.getId(), startTime, userId1);
 
-        String notification = taskService.checkAndNotifyTimeExceeded(0, userId1);
+        String notification = taskService.checkAndNotifyTimeExceeded(task.getId(), userId1, LocalDateTime.now());
         assertEquals("Please re-evaluate or adjust the task.", notification, "The system should suggest task re-evaluation when time exceeds tolerance.");
         assertEquals(TaskStatus.TIME_EXCEEDED, task.getStatus(), "The task status must be 'Time Exceeded'.");
         assertNotNull(task.getSuggestion(), "The system should provide a suggestion for re-evaluation.");
@@ -326,9 +326,9 @@ class TaskServiceTest {
         task.setEstimatedTime(estimatedTime);
 
         LocalDateTime startTime = LocalDateTime.now().minusMinutes(90);
-        taskService.clockIn(0, startTime, userId1);
+        taskService.clockIn(task.getId(), startTime, userId1);
 
-        String notification = taskService.checkForClockOutForgotten(0, userId1);
+        String notification = taskService.checkForClockOutForgotten(task.getId(), userId1, LocalDateTime.now());
 
         assertEquals("You forgot to clock out. Please register the clock-out.", notification, "The system should notify the user about the forgotten clock-out.");
     }
@@ -348,10 +348,10 @@ class TaskServiceTest {
         task.setEstimatedTime(estimatedTime);
 
         LocalDateTime startTime = LocalDateTime.now().minusMinutes(90);
-        taskService.clockIn(0, startTime, userId1);
+        taskService.clockIn(task.getId(), startTime, userId1);
+        taskService.clockOut(task.getId(), LocalDateTime.now(), userId1);
 
-        task.setStatus(TaskStatus.COMPLETED);
-        String notification = taskService.checkForClockOutForgottenInCompletedTask(0, userId1);
+        String notification = taskService.checkForClockOutForgottenInCompletedTask(task.getId(), userId1);
 
         assertEquals("Clock-out is no longer necessary as the task is already completed.", notification, "The system should notify that the clock-out is not necessary as the task is already completed.");
     }
@@ -366,7 +366,7 @@ class TaskServiceTest {
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
         taskService.createTask("task-name", "task with no time exceeded", deadline, userId1);
 
-        String notification = taskService.checkAndNotifyTimeExceeded(0, userId1);
+        String notification = taskService.checkAndNotifyTimeExceeded(task.getId(), userId1, LocalDateTime.now());
 
         assertThat(notification).isEqualTo("Task is within the estimated time.");
     }
@@ -381,7 +381,7 @@ class TaskServiceTest {
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
         taskService.createTask("task-name", "task with no check-in", deadline, userId1);
 
-        String notification = taskService.checkForClockOutForgotten(0, userId1);
+        String notification = taskService.checkForClockOutForgotten(task.getId(), userId1, LocalDateTime.now());
 
         assertThat(notification).isEqualTo("Task is within the estimated time or clock-out is already registered.");
     }
@@ -396,7 +396,7 @@ class TaskServiceTest {
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
         taskService.createTask("task-name", "task with no check-in", deadline, userId1);
 
-        String notification = taskService.checkForClockOutForgottenInCompletedTask(0, userId1);
+        String notification = taskService.checkForClockOutForgottenInCompletedTask(task.getId(), userId1);
 
         assertThat(notification).isEqualTo("Clock-out is not forgotten or the task is not completed.");
     }
@@ -450,7 +450,7 @@ class TaskServiceTest {
 
         Task task = taskService.createTask("Task", "Task not exceeded", deadline, userId1);
 
-       assertThat(taskService.checkForTimeExceeded(0, userId1)).isFalse();
+       assertThat(taskService.checkForTimeExceeded(task.getId(), userId1, LocalDateTime.now())).isFalse();
     }
 
     @Test

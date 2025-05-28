@@ -33,7 +33,7 @@ public class RegisterClockInServiceTest {
         LocalDateTime startTime = LocalDateTime.now();
         Task task = taskService.createTask("Ler", "Livro A", deadline, userId1);
 
-        taskService.clockIn(0, startTime, userId1);
+        taskService.clockIn(task.getId(), startTime, userId1);
 
         assertThat(task.getStatus()).isEqualTo(TaskStatus.IN_PROGRESS);
         assertThat(task.getStartTime()).isNotNull();
@@ -52,7 +52,7 @@ public class RegisterClockInServiceTest {
         taskService.clockOut(task.getId(), LocalDateTime.now().plusHours(1), userId1);
 
         LocalDateTime startTime = LocalDateTime.now();
-        org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy(() -> taskService.clockIn(0, startTime, userId1))
+        org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy(() -> taskService.clockIn(task.getId(), startTime, userId1))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Only pending tasks can be started");
     }
@@ -70,7 +70,7 @@ public class RegisterClockInServiceTest {
         taskService.clockIn(task.getId(), LocalDateTime.now(), userId1);
 
         LocalDateTime startTime = LocalDateTime.now();
-        assertThatThrownBy(() -> taskService.clockIn(0, startTime, userId1))
+        assertThatThrownBy(() -> taskService.clockIn(task.getId(), startTime, userId1))
             .isInstanceOf(IllegalStateException.class)
             .hasMessage("Only pending tasks can be started");
     }
@@ -86,7 +86,7 @@ public class RegisterClockInServiceTest {
         Task task = taskService.createTask("Projeto", "Clock-in futuro", deadline, userId1);
 
         LocalDateTime clockin = LocalDateTime.now().plusHours(1);
-        assertThatThrownBy(() -> taskService.clockIn(0, clockin, userId1))
+        assertThatThrownBy(() -> taskService.clockIn(task.getId(), clockin, userId1))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Start time cannot be in the future");
     }
@@ -101,7 +101,7 @@ public class RegisterClockInServiceTest {
 
         Task task = taskService.createTask("Projeto", "Clock-in null", deadline, userId1);
 
-        assertThatThrownBy(() -> taskService.clockIn(0, null, userId1))
+        assertThatThrownBy(() -> taskService.clockIn(task.getId(), null, userId1))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Start time cannot be null");
     }
