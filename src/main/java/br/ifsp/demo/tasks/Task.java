@@ -76,11 +76,11 @@ public class Task {
     public TaskStatus getStatus() {
         return status;
     }
-    
+
     public void setStatus(TaskStatus status) {
         this.status = status;
     }
-    
+
     public void markAsCompleted() {
         if (this.status != TaskStatus.IN_PROGRESS) {
             throw new IllegalStateException("Task must be in progress to be marked as completed");
@@ -89,6 +89,7 @@ public class Task {
     }
 
     public void clockIn(LocalDateTime startTime) {
+
         if (this.status != TaskStatus.PENDING) {
             throw new IllegalStateException("Only pending tasks can be started");
         }
@@ -105,6 +106,22 @@ public class Task {
         this.status = TaskStatus.IN_PROGRESS;
     }
 
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setFinishTime(LocalDateTime finishTime) {
+        this.finishTime = finishTime;
+    }
+
+    public void setTimeSpent(Long timeSpent) {
+        this.timeSpent = timeSpent;
+    }
+    
+    public void setEstimatedTime(Long estimatedTime) {
+        this.estimatedTime = estimatedTime;
+    }
+    
     public void clockOut(LocalDateTime finishTime) {
         if (this.status != TaskStatus.IN_PROGRESS) {
             throw new IllegalStateException("Task must be in progress to be clocked out");
@@ -126,9 +143,6 @@ public class Task {
         return timeSpent;
     }
 
-    public void setEstimatedTime(Long estimatedTime) {
-        this.estimatedTime = estimatedTime;
-    }
 
     public Long getEstimatedTime() {
         return estimatedTime;
