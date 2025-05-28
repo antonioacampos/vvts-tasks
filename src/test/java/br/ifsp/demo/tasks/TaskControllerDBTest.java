@@ -73,8 +73,8 @@ class TaskControllerDBTest {
     @Tag("UnitTest")
     @Tag("Functional")
     void shouldReturnTaskById() throws Exception {
-        TaskEntity task = taskService.create("Ler livro", "Capítulo 1",
-                LocalDateTime.now().plusHours(2), 30, userId);
+        TaskEntity task = taskService.create(new CreateTaskDTO("Ler livro", "Capítulo 1", LocalDateTime.now().plusHours(2), 30, null), userId);
+
 
         mockMvc.perform(get("/api/v1/task/get/" + task.getId())
                         .header("Authorization", token))
@@ -95,8 +95,8 @@ class TaskControllerDBTest {
     @Tag("UnitTest")
     @Tag("Functional")
     void shouldEditTaskSuccessfully() throws Exception {
-        TaskEntity task = taskService.create("Tarefa Antiga", "Desc",
-                LocalDateTime.now().plusDays(1), 45, userId);
+        TaskEntity task = taskService.create(new CreateTaskDTO("Tarefa Antiga", "Desc", LocalDateTime.now().plusDays(1), 45, null), userId);
+
 
         CreateTaskDTO updated = new CreateTaskDTO("Tarefa Editada", "Nova desc",
                 LocalDateTime.now().plusDays(2), 90, null);
@@ -113,8 +113,8 @@ class TaskControllerDBTest {
     @Tag("UnitTest")
     @Tag("Functional")
     void shouldDeleteTaskSuccessfully() throws Exception {
-        TaskEntity task = taskService.create("Para deletar", "Desc",
-                LocalDateTime.now().plusDays(1), 40, userId);
+        TaskEntity task = taskService.create(new CreateTaskDTO("Para deletar", "Desc", LocalDateTime.now().plusDays(1), 40, null), userId);
+
 
         mockMvc.perform(delete("/api/v1/task/delete/" + task.getId())
                         .header("Authorization", token))
@@ -125,8 +125,8 @@ class TaskControllerDBTest {
     @Tag("UnitTest")
     @Tag("Functional")
     void shouldClockInAndOutSuccessfully() throws Exception {
-        TaskEntity task = taskService.create("Clock Test", "Desc",
-                LocalDateTime.now().plusHours(1), 30, userId);
+        TaskEntity task = taskService.create(new CreateTaskDTO("Clock Test", "Desc", LocalDateTime.now().plusHours(1), 30, null), userId);
+
 
         mockMvc.perform(put("/api/v1/task/clock-in/" + task.getId())
                         .header("Authorization", token))
@@ -141,9 +141,12 @@ class TaskControllerDBTest {
     @Tag("UnitTest")
     @Tag("Functional")
     void shouldMarkAsCompleted() throws Exception {
-        TaskEntity task = taskService.create("Para Completar", "Desc",
-                LocalDateTime.now().plusHours(1), 20, userId);
-        taskService.clockIn(task.getId(), userId);
+        TaskEntity task = taskService.create(
+                new CreateTaskDTO("Para Completar", "Desc", LocalDateTime.now().plusHours(1), 20, null),
+                userId
+        );
+
+        taskService.clockIn(task.getId(), LocalDateTime.now(), userId);
 
         mockMvc.perform(put("/api/v1/task/mark-completed/" + task.getId())
                         .header("Authorization", token))
@@ -154,10 +157,10 @@ class TaskControllerDBTest {
     @Tag("UnitTest")
     @Tag("Functional")
     void shouldReturnSpentTime() throws Exception {
-        TaskEntity task = taskService.create("Spent", "time",
-                LocalDateTime.now().plusHours(1), 20, userId);
-        taskService.clockIn(task.getId(), userId);
-        taskService.clockOut(task.getId(), userId);
+        TaskEntity task = taskService.create(new CreateTaskDTO("Spent", "time", LocalDateTime.now().plusHours(1), 20, null), userId);
+
+        taskService.clockIn(task.getId(), LocalDateTime.now().minusHours(1), userId);
+        taskService.clockOut(task.getId(), LocalDateTime.now(), userId);
 
         mockMvc.perform(get("/api/v1/task/spent-time/" + task.getId())
                         .header("Authorization", token))
@@ -169,8 +172,8 @@ class TaskControllerDBTest {
     @Tag("UnitTest")
     @Tag("Functional")
     void shouldNotifyTimeExceeded() throws Exception {
-        TaskEntity task = taskService.create("Time Exceeded", "Desc",
-                LocalDateTime.now().plusHours(1), 1, userId);
+        TaskEntity task = taskService.create(new CreateTaskDTO("Time Exceeded", "Desc", LocalDateTime.now().plusHours(1), 1, null), userId);
+
         task.setStartTime(LocalDateTime.now().minusMinutes(10));
         task.setStatus(TaskStatus.IN_PROGRESS);
         taskService.updateTask(task);
@@ -185,8 +188,8 @@ class TaskControllerDBTest {
     @Tag("UnitTest")
     @Tag("Functional")
     void shouldCheckTimeExceeded() throws Exception {
-        TaskEntity task = taskService.create("Check Exceeded", "Teste",
-                LocalDateTime.now().plusHours(1), 5, userId);
+        TaskEntity task = taskService.create(new CreateTaskDTO("Check Exceeded", "Teste", LocalDateTime.now().plusHours(1), 5, null), userId);
+
         task.setStartTime(LocalDateTime.now().minusMinutes(15));
         task.setStatus(TaskStatus.IN_PROGRESS);
         taskService.updateTask(task);
@@ -201,8 +204,8 @@ class TaskControllerDBTest {
     @Tag("UnitTest")
     @Tag("Functional")
     void shouldCheckClockOutForgotten() throws Exception {
-        TaskEntity task = taskService.create("ClockOut Forgotten", "Teste",
-                LocalDateTime.now().plusHours(1), 5, userId);
+        TaskEntity task = taskService.create(new CreateTaskDTO("ClockOut Forgotten", "Teste", LocalDateTime.now().plusHours(1), 5, null), userId);
+
         task.setStartTime(LocalDateTime.now().minusMinutes(15));
         task.setFinishTime(null);
         task.setStatus(TaskStatus.IN_PROGRESS);
@@ -218,8 +221,8 @@ class TaskControllerDBTest {
     @Tag("UnitTest")
     @Tag("Functional")
     void shouldCheckClockOutForgottenCompletedTask() throws Exception {
-        TaskEntity task = taskService.create("Completed no finishTime", "Teste",
-                LocalDateTime.now().plusHours(1), 5, userId);
+        TaskEntity task = taskService.create(new CreateTaskDTO("Completed no finishTime", "Teste", LocalDateTime.now().plusHours(1), 5, null), userId);
+
         task.setStartTime(LocalDateTime.now().minusMinutes(10));
         task.setFinishTime(null);
         task.setStatus(TaskStatus.COMPLETED);

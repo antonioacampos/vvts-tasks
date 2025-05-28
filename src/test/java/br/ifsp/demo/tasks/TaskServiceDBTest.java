@@ -1,5 +1,6 @@
 package br.ifsp.demo.tasks;
 
+import br.ifsp.demo.tasks.dtos.CreateTaskDTO;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,11 +28,8 @@ class TaskServiceDBTest {
     void createTask_shouldPersistSuccessfully() {
         UUID userId = UUID.randomUUID();
         TaskEntity task = service.create(
-            "Estudar VVTS", 
-            "Fazer os testes da etapa 2", 
-            LocalDateTime.now().plusDays(1), 
-            3600, 
-            userId
+                new CreateTaskDTO("Estudar VVTS", "Fazer os testes da etapa 2", LocalDateTime.now().plusDays(1), 3600, null),
+                userId
         );
 
         assertNotNull(task.getId());
@@ -46,8 +44,8 @@ class TaskServiceDBTest {
         UUID user1 = UUID.randomUUID();
         UUID user2 = UUID.randomUUID();
 
-        service.create("Task U1", "Desc", LocalDateTime.now(), 1000, user1);
-        service.create("Task U2", "Desc", LocalDateTime.now(), 1000, user2);
+        service.create(new CreateTaskDTO("Task U1", "Desc", LocalDateTime.now(), 1000, null), user1);
+        service.create(new CreateTaskDTO("Task U2", "Desc", LocalDateTime.now(), 1000, null), user2);
 
         List<TaskEntity> tasksU1 = service.getAllByUser(user1);
         assertEquals(1, tasksU1.size());
@@ -59,7 +57,7 @@ class TaskServiceDBTest {
     @Tag("Functional")
     void getByIdAndUser_shouldReturnCorrectTask() {
         UUID userId = UUID.randomUUID();
-        TaskEntity task = service.create("Buscar café", "Desc", LocalDateTime.now(), 1000, userId);
+        TaskEntity task = service.create(new CreateTaskDTO("Buscar café", "Desc", LocalDateTime.now(), 1000, null), userId);
 
         TaskEntity found = service.getByIdAndUser(task.getId(), userId);
         assertEquals(task.getId(), found.getId());
@@ -87,16 +85,10 @@ class TaskServiceDBTest {
     void shouldStartTaskIfPending() {
         UUID userId = UUID.randomUUID();
         // given
-        TaskEntity created = service.create(
-            "Estudar VVTS", 
-            "Focar na Etapa 2", 
-            LocalDateTime.now().plusDays(1), 
-            60, 
-            userId
-        );
+        TaskEntity created = service.create(new CreateTaskDTO("Estudar VVTS", "Focar na etapa 2", LocalDateTime.now().plusDays(1), 60, null), userId);
 
         // when
-        TaskEntity updated = service.clockIn(created.getId(), userId);
+        TaskEntity updated = service.clockIn(created.getId(), LocalDateTime.now(), userId);
 
         // then
         assertNotNull(updated.getStartTime());
@@ -109,14 +101,14 @@ class TaskServiceDBTest {
     @Tag("Functional")
     void shouldNotStartTaskIfNotPending() {
         UUID userId = UUID.randomUUID();
-        TaskEntity task = service.create("Tarefa", "desc", LocalDateTime.now().plusHours(1), 30, userId);
+        TaskEntity task = service.create(new CreateTaskDTO("Tarefa", "desc", LocalDateTime.now().plusHours(1), 30, null), userId);
 
         task.setStatus(TaskStatus.IN_PROGRESS);
         task.setStartTime(LocalDateTime.now());
         repository.save(task);
 
         assertThrows(IllegalStateException.class, () -> {
-            service.clockIn(task.getId(), userId);
+            service.clockIn(task.getId(), LocalDateTime.now(), userId);
         });
     }
 
@@ -126,13 +118,13 @@ class TaskServiceDBTest {
     @Tag("Functional")
     void shouldFinishTaskIfInProgress() {
         UUID userId = UUID.randomUUID();
-        TaskEntity task = service.create("Ler livro", "Capítulo 3", LocalDateTime.now().plusHours(1), 30, userId);
+        TaskEntity task = service.create(new CreateTaskDTO("Ler livro", "Capítulo 3", LocalDateTime.now().plusHours(1), 30, null), userId);
         
         // Primeiro faz o clock-in
-        service.clockIn(task.getId(), userId);
+        service.clockIn(task.getId(), LocalDateTime.now(), userId);
 
         // Faz o clock-out
-        TaskEntity finished = service.clockOut(task.getId(), userId);
+        TaskEntity finished = service.clockOut(task.getId(), LocalDateTime.now().plusMinutes(10), userId);
 
         assertNotNull(finished.getFinishTime());
         assertTrue(finished.getTimeSpent() >= 0);
@@ -145,11 +137,11 @@ class TaskServiceDBTest {
     @Tag("Functional")
     void shouldNotFinishIfNotInProgress() {
         UUID userId = UUID.randomUUID();
-        TaskEntity task = service.create("Escrever relatório", "Página 2", LocalDateTime.now().plusHours(2), 45, userId);
+        TaskEntity task = service.create(new CreateTaskDTO("Escrever relatório", "Página 2", LocalDateTime.now().plusHours(2), 45, null), userId);
 
         // Tenta finalizar sem fazer clock-in
         assertThrows(IllegalStateException.class, () -> {
-            service.clockOut(task.getId(), userId);
+            service.clockOut(task.getId(), LocalDateTime.now(), userId);
         });
     }
 
