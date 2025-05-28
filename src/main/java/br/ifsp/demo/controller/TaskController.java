@@ -30,7 +30,8 @@ public class TaskController {
         final UUID userId = authenticationInfoService.getAuthenticatedUserId();
 
         TaskEntity newTask = taskService.create(
-                task.title(), task.description(), task.deadline(), task.estimatedTime(), userId);
+                new CreateTaskDTO(task.title(), 
+                task.description(), task.deadline(), task.estimatedTime(), null), userId);
 
         return new ResponseEntity<>(new ResponseTaskDTO(newTask), HttpStatus.CREATED);
     }
