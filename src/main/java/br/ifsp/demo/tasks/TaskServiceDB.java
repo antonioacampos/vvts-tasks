@@ -83,14 +83,14 @@ public class TaskServiceDB {
                 .orElseThrow(() -> new IllegalArgumentException("Task not found"));
     }
 
-    public TaskEntity editTask(UUID taskId, String title, String description, LocalDateTime deadline, UUID userId) {
+    public TaskEntity editTask(UUID taskId, String title, String description, LocalDateTime deadline, UUID userId, LocalDateTime currentTime) {
         TaskEntity task = getTask(taskId, userId);
 
         if (title.isBlank()) {
             throw new IllegalArgumentException("Cannot edit task with blank title");
         }
 
-        if (deadline.isBefore(LocalDateTime.now())) {
+        if (deadline.isBefore(currentTime)) {
             throw new IllegalArgumentException("Cannot edit task with outdated deadline");
         }
 
@@ -130,11 +130,11 @@ public class TaskServiceDB {
                 .toList();
     }
 
-    public boolean checkForTimeExceeded(UUID id, UUID userId) {
+    public boolean checkForTimeExceeded(UUID id, UUID userId, LocalDateTime currentTime) {
         TaskEntity task = getByIdAndUser(id, userId);
 
         if (task.getStatus() == TaskStatus.IN_PROGRESS) {
-            long timeExceeded = java.time.Duration.between(task.getStartTime(), LocalDateTime.now()).toMinutes();
+            long timeExceeded = java.time.Duration.between(task.getStartTime(), currentTime).toMinutes();
             long tolerance = (long) (task.getEstimatedTime() * 0.10);
             if (timeExceeded > task.getEstimatedTime() + tolerance) {
                 task.setStatus(TaskStatus.TIME_EXCEEDED);
@@ -149,11 +149,11 @@ public class TaskServiceDB {
         return task.getStatus() == TaskStatus.TIME_EXCEEDED;
     }
 
-    public String checkAndNotifyTimeExceeded(UUID id, UUID userId) {
+    public String checkAndNotifyTimeExceeded(UUID id, UUID userId, LocalDateTime currentTime) {
         TaskEntity task = getByIdAndUser(id, userId);
 
         if (task.getStatus() == TaskStatus.IN_PROGRESS) {
-            long timeExceeded = java.time.Duration.between(task.getStartTime(), LocalDateTime.now()).toMinutes();
+            long timeExceeded = java.time.Duration.between(task.getStartTime(), currentTime).toMinutes();
             long tolerance = (long) (task.getEstimatedTime() * 0.10);
 
             if (timeExceeded > task.getEstimatedTime() + tolerance) {
@@ -176,11 +176,11 @@ public class TaskServiceDB {
         return "Task is within the estimated time.";
     }
 
-    public String checkForClockOutForgotten(UUID id, UUID userId) {
+    public String checkForClockOutForgotten(UUID id, UUID userId, LocalDateTime currentTime) {
         TaskEntity task = getByIdAndUser(id, userId);
 
         if (task.getStatus() == TaskStatus.IN_PROGRESS &&
-                LocalDateTime.now().isAfter(task.getStartTime().plusMinutes(task.getEstimatedTime())) &&
+                currentTime.isAfter(task.getStartTime().plusMinutes(task.getEstimatedTime())) &&
                 task.getFinishTime() == null) {
             return "You forgot to clock out. Please register the clock-out.";
         }
