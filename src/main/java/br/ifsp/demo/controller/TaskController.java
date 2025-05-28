@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -41,7 +42,7 @@ public class TaskController {
         final UUID userId = authenticationInfoService.getAuthenticatedUserId();
 
         TaskEntity edited = taskService.editTask(
-                id, task.title(), task.description(), task.deadline(), userId);
+                id, task.title(), task.description(), task.deadline(), userId, LocalDateTime.now());
 
         return new ResponseEntity<>(new ResponseTaskDTO(edited), HttpStatus.OK);
     }
@@ -85,7 +86,7 @@ public class TaskController {
     public ResponseEntity<?> clockIn(@PathVariable UUID id) {
         final UUID userId = authenticationInfoService.getAuthenticatedUserId();
 
-        taskService.clockIn(id, userId);
+        taskService.clockIn(id, LocalDateTime.now(), userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -93,7 +94,7 @@ public class TaskController {
     public ResponseEntity<?> clockOut(@PathVariable UUID id) {
         final UUID userId = authenticationInfoService.getAuthenticatedUserId();
 
-        taskService.clockOut(id, userId);
+        taskService.clockOut(id, LocalDateTime.now(), userId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
@@ -109,7 +110,7 @@ public class TaskController {
     public ResponseEntity<?> checkTimeExceeded(@PathVariable UUID id) {
         final UUID userId = authenticationInfoService.getAuthenticatedUserId();
 
-        boolean exceeded = taskService.checkForTimeExceeded(id, userId);
+        boolean exceeded = taskService.checkForTimeExceeded(id, userId, LocalDateTime.now());
         return new ResponseEntity<>(Map.of("status", exceeded), HttpStatus.OK);
     }
 
@@ -117,7 +118,7 @@ public class TaskController {
     public ResponseEntity<?> notifyTimeExceeded(@PathVariable UUID id) {
         final UUID userId = authenticationInfoService.getAuthenticatedUserId();
 
-        String notify = taskService.checkAndNotifyTimeExceeded(id, userId);
+        String notify = taskService.checkAndNotifyTimeExceeded(id, userId, LocalDateTime.now());
         return new ResponseEntity<>(Map.of("status", notify), HttpStatus.OK);
     }
 
@@ -125,7 +126,7 @@ public class TaskController {
     public ResponseEntity<?> clockOutForgotten(@PathVariable UUID id) {
         final UUID userId = authenticationInfoService.getAuthenticatedUserId();
 
-        String check = taskService.checkForClockOutForgotten(id, userId);
+        String check = taskService.checkForClockOutForgotten(id, userId, LocalDateTime.now());
         return new ResponseEntity<>(Map.of("status", check), HttpStatus.OK);
     }
 
