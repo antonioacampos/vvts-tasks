@@ -191,7 +191,7 @@ public class TaskServiceDB {
     public String checkForClockOutForgottenInCompletedTask(UUID id, UUID userId) {
         TaskEntity task = getByIdAndUser(id, userId);
 
-        if (task.getStatus() == TaskStatus.COMPLETED && task.getFinishTime() == null) {
+        if (task.getStatus() == TaskStatus.COMPLETED) {
             return "Clock-out is no longer necessary as the task is already completed.";
         }
 
