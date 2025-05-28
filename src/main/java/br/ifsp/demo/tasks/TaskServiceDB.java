@@ -62,14 +62,13 @@ public class TaskServiceDB {
         return repository.save(task);
     }
 
-    public TaskEntity clockOut(UUID taskId, UUID userId) {
+    public TaskEntity clockOut(UUID taskId, LocalDateTime finishTime, UUID userId) {
         TaskEntity task = getByIdAndUser(taskId, userId);
 
         if (task.getStatus() != TaskStatus.IN_PROGRESS) {
             throw new IllegalStateException("Only IN_PROGRESS tasks can be finished");
         }
 
-        LocalDateTime finishTime = LocalDateTime.now();
         long timeSpent = java.time.Duration.between(task.getStartTime(), finishTime).toMinutes();
 
         task.setFinishTime(finishTime);
