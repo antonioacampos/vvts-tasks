@@ -47,8 +47,7 @@ public class MarkTaskAsCompletedServiceTest {
     void shouldNotAllowCompletionIfTaskIsNotInProgress() {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
-
-        Task task = taskService.createTask("Estudar", "Fazer resumo", deadline, userId1);
+        Task task = taskService.createTask("Estudar", "Fazer resumo", deadline, 120, userId1);
         task.setStatus(TaskStatus.PENDING);
 
         assertThatThrownBy(() -> taskService.markAsCompleted(task.getId(), userId1))

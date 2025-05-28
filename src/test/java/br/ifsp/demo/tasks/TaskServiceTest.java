@@ -32,8 +32,9 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime dateTime = LocalDateTime.of(2025, 5, 28, 10, 40);
+        long estimatedTime = 120;
 
-        Task task = taskService.createTask("Name", "Description", dateTime, userId1);
+        Task task = taskService.createTask("Name", "Description", dateTime, estimatedTime, userId1);
 
         assertThat(task.getTitle()).isEqualTo("Name");
         assertThat(task.getDescription()).isEqualTo("Description");
@@ -50,7 +51,7 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
 
-        assertThatThrownBy(() -> taskService.createTask(" ", "Description", dateTime, userId1))
+        assertThatThrownBy(() -> taskService.createTask(" ", "Description", dateTime, 120, userId1))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cannot create task with blank title");
     }
@@ -65,7 +66,7 @@ class TaskServiceTest {
         TaskService taskService =  new TaskService(taskServiceDB);
         LocalDateTime dateTime = LocalDateTime.now().minusHours(1);
 
-        assertThatThrownBy(() -> taskService.createTask("Name", "Description", dateTime, userId1))
+        assertThatThrownBy(() -> taskService.createTask("Name", "Description", dateTime, 20, userId1))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Cannot create task with outdated deadline");
     }
@@ -81,7 +82,7 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
 
-        Task task = taskService.createTask("Name", "Description", dateTime, userId1);
+        Task task = taskService.createTask("Name", "Description", dateTime, 20, userId1);
 
         Task modTask = taskService.editTask(task.getId(), "Another name", "Another Description", dateTime.plusHours(5), userId1, LocalDateTime.now());
 
@@ -101,7 +102,7 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
 
-        Task task = taskService.createTask("Name", "Description", dateTime, userId1);
+        Task task = taskService.createTask("Name", "Description", dateTime, 20, userId1);
 
         assertThatThrownBy(() -> taskService.editTask(task.getId(), task.getTitle(), task.getDescription(), dateTime.minusHours(20), userId1, LocalDateTime.now()))
                 .isInstanceOf(IllegalArgumentException.class)
@@ -140,8 +141,8 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
 
-        taskService.createTask("Name 1", "Description", dateTime, userId1);
-        taskService.createTask("Another name", "This Description", dateTime, userId1);
+        taskService.createTask("Name 1", "Description", dateTime, 20, userId1);
+        taskService.createTask("Another name", "This Description", dateTime, 20, userId1);
 
         String information = taskService.getAllInformation(userId1);
 
@@ -362,7 +363,7 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
-        taskService.createTask("task-name", "task with no time exceeded", deadline, userId1);
+        Task task = taskService.createTask("task-name", "task with no time exceeded", deadline, 20, userId1);
 
         String notification = taskService.checkAndNotifyTimeExceeded(task.getId(), userId1, LocalDateTime.now());
 
@@ -377,7 +378,7 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
-        taskService.createTask("task-name", "task with no check-in", deadline, userId1);
+        Task task = taskService.createTask("task-name", "task with no check-in", deadline, 20, userId1);
 
         String notification = taskService.checkForClockOutForgotten(task.getId(), userId1, LocalDateTime.now());
 
@@ -392,7 +393,7 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
-        taskService.createTask("task-name", "task with no check-in", deadline, userId1);
+        Task task = taskService.createTask("task-name", "task with no check-in", deadline, 20, userId1);
 
         String notification = taskService.checkForClockOutForgottenInCompletedTask(task.getId(), userId1);
 
@@ -408,13 +409,13 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
 
-        assertThatThrownBy(() -> taskService.createTask(null, "task with no title", deadline, userId1))
+        assertThatThrownBy(() -> taskService.createTask(null, "task with no title", deadline, 20, userId1))
                 .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> taskService.createTask("Title with no description", null, deadline, userId1))
+        assertThatThrownBy(() -> taskService.createTask("Title with no description", null, deadline, 20, userId1))
                 .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> taskService.createTask("Task with no deadline", "Task with no deadline", null, userId1))
+        assertThatThrownBy(() -> taskService.createTask("Task with no deadline", "Task with no deadline", null, 20, userId1))
                 .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> taskService.createTask("Task with no user", "Task with no user", deadline, null))
+        assertThatThrownBy(() -> taskService.createTask("Task with no user", "Task with no user", deadline, 20, null))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -426,15 +427,15 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
 
-        Task task = taskService.createTask("Task", "Task to be edited", deadline, userId1);
+        Task task = taskService.createTask("Task", "Task to be edited", deadline, 20, userId1);
 
-        assertThatThrownBy(() -> taskService.editTask( 0, null, "Task", deadline, userId1))
+        assertThatThrownBy(() -> taskService.editTask( task.getId(), null, "Task", deadline, userId1, LocalDateTime.now()))
                 .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> taskService.editTask( 0, "Task", null, deadline, userId1))
+        assertThatThrownBy(() -> taskService.editTask( task.getId(), "Task", null, deadline, userId1, LocalDateTime.now()))
                 .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> taskService.editTask( 0, "Task", "Task", null, userId1))
+        assertThatThrownBy(() -> taskService.editTask( task.getId(), "Task", "Task", null, userId1, LocalDateTime.now()))
                 .isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> taskService.editTask( 0, "Task", "Task", deadline, null))
+        assertThatThrownBy(() -> taskService.editTask( task.getId(), "Task", "Task", deadline, null, LocalDateTime.now()))
                 .isInstanceOf(NullPointerException.class);
     }
 
@@ -446,7 +447,7 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
 
-        Task task = taskService.createTask("Task", "Task not exceeded", deadline, userId1);
+        Task task = taskService.createTask("Task", "Task not exceeded", deadline, 20, userId1);
 
        assertThat(taskService.checkForTimeExceeded(task.getId(), userId1, LocalDateTime.now())).isFalse();
     }

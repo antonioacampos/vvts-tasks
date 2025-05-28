@@ -3,6 +3,7 @@ package br.ifsp.demo.tasks;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import jdk.jfr.Description;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -48,13 +49,14 @@ public class RegisterClockInServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
+        Task task = taskService.createTask("Estudar", "Matéria X", deadline, 120, userId1);
         taskService.clockIn(task.getId(), LocalDateTime.now(), userId1);
         taskService.clockOut(task.getId(), LocalDateTime.now().plusHours(1), userId1);
 
         LocalDateTime startTime = LocalDateTime.now();
         org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy(() -> taskService.clockIn(task.getId(), startTime, userId1))
                 .isInstanceOf(IllegalStateException.class)
-                .hasMessage("Only pending tasks can be started");
+                .hasMessage("Only PENDING tasks can be started.");
     }
 
     @Test
@@ -66,13 +68,13 @@ public class RegisterClockInServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
-        Task task = taskService.createTask("Projeto", "Clock-in duplo", deadline, userId1);
+        Task task = taskService.createTask("Projeto", "Clock-in duplo", deadline, 120, userId1);
         taskService.clockIn(task.getId(), LocalDateTime.now(), userId1);
 
         LocalDateTime startTime = LocalDateTime.now();
         assertThatThrownBy(() -> taskService.clockIn(task.getId(), startTime, userId1))
             .isInstanceOf(IllegalStateException.class)
-            .hasMessage("Only pending tasks can be started");
+            .hasMessage("Only PENDING tasks can be started.");
     }
 
     @Test
@@ -83,7 +85,7 @@ public class RegisterClockInServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
-        Task task = taskService.createTask("Projeto", "Clock-in futuro", deadline, userId1);
+        Task task = taskService.createTask("Projeto", "Clock-in futuro", deadline, 120, userId1);
 
         LocalDateTime clockin = LocalDateTime.now().plusHours(1);
         assertThatThrownBy(() -> taskService.clockIn(task.getId(), clockin, userId1))
@@ -99,7 +101,7 @@ public class RegisterClockInServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
-        Task task = taskService.createTask("Projeto", "Clock-in null", deadline, userId1);
+        Task task = taskService.createTask("Projeto", "Clock-in null", deadline, 120, userId1);
 
         assertThatThrownBy(() -> taskService.clockIn(task.getId(), null, userId1))
                 .isInstanceOf(IllegalArgumentException.class)
