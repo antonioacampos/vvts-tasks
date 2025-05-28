@@ -14,8 +14,8 @@ public record ResponseTaskDTO(
         TaskStatus status,
         LocalDateTime startTime,
         LocalDateTime finishTime,
-        long timeSpent,
-        long estimatedTime,
+        Long timeSpent,
+        Long estimatedTime,
         String suggestion,
         UUID userId
 ) {
