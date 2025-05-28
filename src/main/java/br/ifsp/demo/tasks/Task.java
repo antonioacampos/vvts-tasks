@@ -5,6 +5,7 @@ import java.util.UUID;
 
 public class Task {
 
+    private UUID id;
     private String title;
     private String description;
     private LocalDateTime deadline;
@@ -19,17 +20,20 @@ public class Task {
 
     private UUID userId;
 
-    public Task(String title, String description, LocalDateTime deadline, UUID userId) {
+    public Task(UUID id, String title, String description, LocalDateTime deadline, UUID userId) {
 
         if(title.isBlank()) throw new IllegalArgumentException("Cannot create task with blank title");
 
         if(deadline.isBefore(LocalDateTime.now())) throw new IllegalArgumentException("Cannot create task with outdated deadline");
 
+        this.id = id;
         this.title = title;
         this.description = description;
         this.deadline = deadline;
         this.userId = userId;
     }
+
+    public UUID getId() {return id;}
 
     public String getTitle() {
         return title;
