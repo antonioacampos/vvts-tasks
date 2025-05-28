@@ -104,49 +104,37 @@ public class TaskService {
         }
     }
 
-    public String checkAndNotifyTimeExceeded(int index, UUID userId) {
-        Task task = findTaskByUserId(userId, index);
-        checkAndUpdateStatusForTimeExceeded(task);
+    private Task convertToTask(TaskEntity taskEntity) {
+        Task task = new Task(
+                taskEntity.getId(),
+                taskEntity.getTitle(),
+                taskEntity.getDescription(),
+                taskEntity.getDeadline(),
+                taskEntity.getUserId()
+        );
+        task.setStatus(taskEntity.getStatus());
 
-        if (task.getStatus() == TaskStatus.TIME_EXCEEDED) {
-            if (task.getSuggestion() != null) {
-                return task.getSuggestion();
-            }
-            return "Time exceeded! Please register the clock-out.";
-        }
-        return "Task is within the estimated time.";
-    }
-
-    public String checkForClockOutForgotten(int index, UUID userId) {
-        Task task = findTaskByUserId(userId, index);
-
-        if (task.getStatus() == TaskStatus.IN_PROGRESS &&
-                LocalDateTime.now().isAfter(task.getStartTime().plusMinutes(task.getEstimatedTime())) &&
-                task.getFinishTime() == null) {
-            return "You forgot to clock out. Please register the clock-out.";
-        }
-        return "Task is within the estimated time or clock-out is already registered.";
-    }
-
-    public String checkForClockOutForgottenInCompletedTask(int index, UUID userId) {
-        Task task = findTaskByUserId(userId, index);
-
-        if (task.getStatus() == TaskStatus.COMPLETED && task.getFinishTime() == null) {
-            return "Clock-out is no longer necessary as the task is already completed.";
+        if (taskEntity.getStartTime() != null) {
+            task.setStartTime(taskEntity.getStartTime());
         }
 
-        return "Clock-out is not forgotten or the task is not completed.";
-    }
-
-    private Task findTaskByUserId(UUID userId, int index) {
-        List<Task> userTasks = tasks.stream()
-                .filter(task -> task.getUserId().equals(userId))
-                .collect(Collectors.toList());
-
-        if (index < 0 || index >= userTasks.size()) {
-            throw new IndexOutOfBoundsException("Index out of bounds");
+        if (taskEntity.getFinishTime() != null) {
+            task.setFinishTime(taskEntity.getFinishTime());
         }
 
-        return userTasks.get(index);
+        if (taskEntity.getTimeSpent() != null) {
+            task.setTimeSpent(taskEntity.getTimeSpent());
+        }
+
+        if (taskEntity.getEstimatedTime() != null) {
+            task.setEstimatedTime(taskEntity.getEstimatedTime());
+        }
+
+        if (taskEntity.getSuggestion() != null) {
+            task.setSuggestion(taskEntity.getSuggestion());
+        }
+
+        return task;
     }
+
 }
