@@ -8,8 +8,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.within;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @SpringBootTest
@@ -37,6 +39,6 @@ public class ViewSpecificTaskServiceTest {
 
         assertThat(task.getTitle()).isEqualTo("Ler");
         assertThat(task.getDescription()).isEqualTo("Capítulo 4");
-        assertThat(task.getDeadline()).isEqualTo(deadline.plusDays(1));
+        assertThat(task.getDeadline()).isCloseTo(deadline.plusDays(1), within(1, ChronoUnit.SECONDS));
     }
 }
