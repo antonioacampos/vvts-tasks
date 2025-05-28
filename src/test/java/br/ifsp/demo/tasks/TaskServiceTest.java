@@ -238,9 +238,10 @@ class TaskServiceTest {
         taskService.clockIn(task.getId(), startTime, userId1);
 
         boolean isTimeExceeded = taskService.checkForTimeExceeded(task.getId(), userId1, LocalDateTime.now());
+        Task taskUpdated = taskService.getTask(task.getId(), userId1);
 
         assertTrue(isTimeExceeded, "Task must be setted to 'exceeded time'.");
-        assertEquals(TaskStatus.TIME_EXCEEDED, task.getStatus(), "Task status must be 'Time exceeded'.");
+        assertEquals(TaskStatus.TIME_EXCEEDED, taskUpdated.getStatus(), "Task status must be 'Time exceeded'.");
     }
 
     @Test
@@ -252,18 +253,16 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
-        Task task = taskService.createTask("task-name", "task-desc", deadline, userId1);
-
-        long estimatedTime = 60;
-        task.setEstimatedTime(estimatedTime);
+        Task task = taskService.createTask("task-name", "task-desc", deadline, 60, userId1);
 
         LocalDateTime startTime = LocalDateTime.now().minusMinutes(65);
         taskService.clockIn(task.getId(), startTime, userId1);
 
         String notification = taskService.checkAndNotifyTimeExceeded(task.getId(), userId1, LocalDateTime.now());
+        Task taskUpdated = taskService.getTask(task.getId(), userId1);
 
         assertEquals("Time exceeded! Please register the clock-out.", notification, "The system must notify that the time is exceeded.");
-        assertEquals(TaskStatus.TIME_EXCEEDED, task.getStatus(), "The task status must be 'Time Exceeded'.");
+        assertEquals(TaskStatus.TIME_EXCEEDED, taskUpdated.getStatus(), "The task status must be 'Time Exceeded'.");
     }
 
     @Test
@@ -275,17 +274,15 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
-        Task task = taskService.createTask("task-name", "task-desc", deadline, userId1);
-
-        long estimatedTime = 60;
-        task.setEstimatedTime(estimatedTime);
+        Task task = taskService.createTask("task-name", "task-desc", deadline, 60, userId1);
 
         LocalDateTime startTime = LocalDateTime.now().minusMinutes(65);
         taskService.clockIn(task.getId(), startTime, userId1);
         String notification = taskService.checkAndNotifyTimeExceeded(task.getId(), userId1, LocalDateTime.now());
+        Task taskUpdated = taskService.getTask(task.getId(), userId1);
 
         assertEquals("Time exceeded! Please register the clock-out.", notification, "The system must notify that the time is exceeded without suggesting re-evaluation.");
-        assertNull(task.getSuggestion(), "The system should not suggest re-evaluation when the time exceeded is within tolerance.");
+        assertNull(taskUpdated.getSuggestion(), "The system should not suggest re-evaluation when the time exceeded is within tolerance.");
     }
 
     @Test
@@ -297,7 +294,7 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
-        Task task = taskService.createTask("task-name", "task-desc", deadline, userId1);
+        Task task = taskService.createTask("task-name", "task-desc", deadline, 20, userId1);
 
         long estimatedTime = 60;
         task.setEstimatedTime(estimatedTime);
@@ -306,9 +303,10 @@ class TaskServiceTest {
         taskService.clockIn(task.getId(), startTime, userId1);
 
         String notification = taskService.checkAndNotifyTimeExceeded(task.getId(), userId1, LocalDateTime.now());
+        Task taskUpdated = taskService.getTask(task.getId(), userId1);
         assertEquals("Please re-evaluate or adjust the task.", notification, "The system should suggest task re-evaluation when time exceeds tolerance.");
-        assertEquals(TaskStatus.TIME_EXCEEDED, task.getStatus(), "The task status must be 'Time Exceeded'.");
-        assertNotNull(task.getSuggestion(), "The system should provide a suggestion for re-evaluation.");
+        assertEquals(TaskStatus.TIME_EXCEEDED, taskUpdated.getStatus(), "The task status must be 'Time Exceeded'.");
+        assertNotNull(taskUpdated.getSuggestion(), "The system should provide a suggestion for re-evaluation.");
     }
 
     @Test
@@ -320,7 +318,7 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
-        Task task = taskService.createTask("task-name", "task-desc", deadline, userId1);
+        Task task = taskService.createTask("task-name", "task-desc", deadline, 20, userId1);
 
         long estimatedTime = 60;
         task.setEstimatedTime(estimatedTime);
@@ -342,7 +340,7 @@ class TaskServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
-        Task task = taskService.createTask("task-name", "task-desc", deadline, userId1);
+        Task task = taskService.createTask("task-name", "task-desc", deadline, 20, userId1);
 
         long estimatedTime = 60;
         task.setEstimatedTime(estimatedTime);

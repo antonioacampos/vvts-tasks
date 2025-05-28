@@ -30,12 +30,13 @@ public class MarkTaskAsCompletedServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
-        Task task = taskService.createTask("Estudar", "Revisar VVTS", deadline, userId1);
+        Task task = taskService.createTask("Estudar", "Revisar VVTS", deadline, 120, userId1);
         taskService.clockIn(task.getId(), LocalDateTime.now(), userId1);
 
         taskService.markAsCompleted(task.getId(), userId1);
+        Task taskUpdated = taskService.getTask(task.getId(), userId1);
 
-        assertThat(task.getStatus()).isEqualTo(TaskStatus.COMPLETED);
+        assertThat(taskUpdated.getStatus()).isEqualTo(TaskStatus.COMPLETED);
     }
 
     @Test

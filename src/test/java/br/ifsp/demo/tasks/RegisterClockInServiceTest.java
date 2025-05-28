@@ -31,12 +31,12 @@ public class RegisterClockInServiceTest {
         TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
         LocalDateTime startTime = LocalDateTime.now();
-        Task task = taskService.createTask("Ler", "Livro A", deadline, userId1);
+        Task task = taskService.createTask("Ler", "Livro A", deadline, 120, userId1);
 
         taskService.clockIn(task.getId(), startTime, userId1);
-
-        assertThat(task.getStatus()).isEqualTo(TaskStatus.IN_PROGRESS);
-        assertThat(task.getStartTime()).isNotNull();
+        Task taskUpdated = taskService.getTask(task.getId(), userId1);
+        assertThat(taskUpdated.getStatus()).isEqualTo(TaskStatus.IN_PROGRESS);
+        assertThat(taskUpdated.getStartTime()).isNotNull();
     }
 
     @Test
