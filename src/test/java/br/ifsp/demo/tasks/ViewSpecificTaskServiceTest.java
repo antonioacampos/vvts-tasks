@@ -3,13 +3,22 @@ package br.ifsp.demo.tasks;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import jdk.jfr.Description;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
+@SpringBootTest
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class ViewSpecificTaskServiceTest {
+    @Autowired
+    private TaskServiceDB taskServiceDB;
+
+
     UUID userId1 = UUID.randomUUID();
 
     @Test
