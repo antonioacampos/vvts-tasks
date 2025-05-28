@@ -1,4 +1,5 @@
 package br.ifsp.demo.tasks;
+import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -7,9 +8,10 @@ import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@RequiredArgsConstructor
 public class TaskService {
 
-    private List<Task> tasks= new ArrayList<>();
+    private final TaskServiceDB taskServiceDB;
 
     public Task createTask(String title, String description, LocalDateTime deadline, UUID userId) {
         if(Objects.isNull(title) || Objects.isNull(description) || Objects.isNull(deadline) || Objects.isNull(userId))
