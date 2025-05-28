@@ -29,7 +29,7 @@ class TaskServiceTest {
     @Description("Should create new task with informed data")
     void ShouldCreateNewTaskWithInformedData() {
         //C02/US001
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime dateTime = LocalDateTime.of(2025, 5, 28, 10, 40);
 
@@ -47,7 +47,7 @@ class TaskServiceTest {
     @Description("Should not create task with blank title")
     void ShouldNotCreateTaskWithBlankTitle() {
         //C01/US001
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
 
         assertThatThrownBy(() -> taskService.createTask(" ", "Description", dateTime, userId1))
@@ -62,7 +62,7 @@ class TaskServiceTest {
     @Description("Should not create task with outdated deadline")
     void ShouldNotCreateTaskWithOutdatedDeadline() {
         //C03/US001
-        TaskService taskService =  new TaskService();
+        TaskService taskService =  new TaskService(taskServiceDB);
         LocalDateTime dateTime = LocalDateTime.now().minusHours(1);
 
         assertThatThrownBy(() -> taskService.createTask("Name", "Description", dateTime, userId1))
@@ -78,7 +78,7 @@ class TaskServiceTest {
     void ShouldBeAbleToEditTasks() {
         //C02/US002
 
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
 
         Task task = taskService.createTask("Name", "Description", dateTime, userId1);
@@ -98,7 +98,7 @@ class TaskServiceTest {
     @Description("Should not be able to edit with the same check as creating")
     void ShouldNotBeAbleToEditWithTheSameCheckAsCreating() {
         //C01/US002
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
 
         Task task = taskService.createTask("Name", "Description", dateTime, userId1);
@@ -137,7 +137,7 @@ class TaskServiceTest {
     @Description("Should return information of all registered tasks")
     void ShouldReturnInformationOfAllRegisteredTasks() {
 
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
 
         taskService.createTask("Name 1", "Description", dateTime, userId1);
@@ -170,7 +170,7 @@ class TaskServiceTest {
     @Tag("Functional")
     @Description("Should delete a task")
     void ShouldDeleteATask() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
 
         taskService.createTask("Name 1", "Description", dateTime, userId1);
@@ -188,7 +188,7 @@ class TaskServiceTest {
     @Description("Should return the spent time when clock-out")
     void ShouldReturnSpentTimeWhenClockOut() {
         // C01/US009
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.of(2025, 11, 1, 12, 0);
         taskService.createTask("task-name", "task-desc", deadline, userId1);
@@ -212,7 +212,7 @@ class TaskServiceTest {
     void shouldReturnErrorWhenClockOutWithoutClockIn() {
         // C02/US009
 
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.of(2025, 11, 1, 12, 0);
         taskService.createTask("task-name", "task-desc", deadline, userId1);
         LocalDateTime finishTime = LocalDateTime.of(2025, 12, 2, 2, 2);
@@ -226,7 +226,7 @@ class TaskServiceTest {
     @Tag("Functional")
     @Description("Should return exceeded time when clockout not registered")
     void ShouldNotifyTimeExceededWhenClockOutNotRegistered() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
         Task task = taskService.createTask("task-name", "task-desc", deadline, userId1);
@@ -249,7 +249,7 @@ class TaskServiceTest {
     @Tag("Functional")
     @Description("Should notify the time exceeded when task is consulted")
     void ShouldNotifyTimeExceededWhenTaskIsConsulted() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
         Task task = taskService.createTask("task-name", "task-desc", deadline, userId1);
@@ -272,7 +272,7 @@ class TaskServiceTest {
     @Tag("Functional")
     @Description("Should not suggest reevaluation if time exceeded is within tolerance")
     void ShouldNotSuggestReevaluationIfTimeExceededIsWithinTolerance() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
         Task task = taskService.createTask("task-name", "task-desc", deadline, userId1);
@@ -294,7 +294,7 @@ class TaskServiceTest {
     @Tag("Functional")
     @Description("Should suggest reevaluation when time exceeded is above tolerance")
     void ShouldSuggestReevaluationWhenTimeExceededIsAboveTolerance() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
         Task task = taskService.createTask("task-name", "task-desc", deadline, userId1);
@@ -317,7 +317,7 @@ class TaskServiceTest {
     @Tag("Functional")
     @Description("Should notify clock out forgotten when the time is exceeded")
     void ShouldNotifyClockOutForgottenWhenTimeExceeded() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
         Task task = taskService.createTask("task-name", "task-desc", deadline, userId1);
@@ -339,7 +339,7 @@ class TaskServiceTest {
     @Tag("Functional")
     @Description("Should notify clock out not necessary when the task is completed")
     void ShouldNotifyClockOutNotNecessaryWhenTaskIsCompleted() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
         Task task = taskService.createTask("task-name", "task-desc", deadline, userId1);
@@ -361,7 +361,7 @@ class TaskServiceTest {
     @Tag("Functional")
     @Description("Should notify that time is not exceeded if time is not exceeded")
     void shouldNotifyThatTimeIsNotExceededIfTimeIsNotExceeded(){
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
         taskService.createTask("task-name", "task with no time exceeded", deadline, userId1);
@@ -376,7 +376,7 @@ class TaskServiceTest {
     @Tag("Functional")
     @Description("Should notify absence of check-in if get notification")
     void shouldNotifyAbsenceOfCheckInIfGetNotification() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
         taskService.createTask("task-name", "task with no check-in", deadline, userId1);
@@ -391,7 +391,7 @@ class TaskServiceTest {
     @Tag("Functional")
     @Description("Should notify that task is not completed if asked of clock out forgotten")
     void shouldNotifyThatTaskIsNotCompletedIfAskedOfClockOutForgotten() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
 
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
         taskService.createTask("task-name", "task with no check-in", deadline, userId1);
@@ -407,7 +407,7 @@ class TaskServiceTest {
     @Tag("Functional")
     @Description("Should not permit creation of task with any null value")
     void shouldNotPermitCreationOfTaskWithAnyNullValue() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
 
         assertThatThrownBy(() -> taskService.createTask(null, "task with no title", deadline, userId1))
@@ -425,7 +425,7 @@ class TaskServiceTest {
     @Tag("Functional")
     @Description("Should not permit edition of task with any null value")
     void shouldNotPermitEditionOfTaskWithAnyNullValue() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
 
         Task task = taskService.createTask("Task", "Task to be edited", deadline, userId1);
@@ -445,7 +445,7 @@ class TaskServiceTest {
     @Tag("Structural")
     @Description("Should return false when time is not exceeded")
     void shouldReturnFalseWhenTimeIsNotExceeded() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(7);
 
         Task task = taskService.createTask("Task", "Task not exceeded", deadline, userId1);

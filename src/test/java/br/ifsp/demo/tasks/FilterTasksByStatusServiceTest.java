@@ -27,14 +27,11 @@ public class FilterTasksByStatusServiceTest {
     @Tag("Functional")
     @Description("C02/US007 - Should return tasks filtered by valid status")
     void shouldReturnTasksFilteredByValidStatus() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
-        Task t1 = taskService.createTask("Estudar", "Mat A", deadline, userId1);
-        t1.setStatus(TaskStatus.IN_PROGRESS);
-
-        Task t2 = taskService.createTask("Ler", "Cap 3", deadline.plusDays(1), userId1);
-        t2.setStatus(TaskStatus.COMPLETED);
+        Task t1 = taskService.createTask("Estudar", "Mat A", deadline, 120, userId1);
+        taskService.clockIn(t1.getId(), LocalDateTime.now().minusHours(1), userId1);
 
         List<Task> result = taskService.filterByStatus("IN_PROGRESS", userId1);
 
@@ -47,7 +44,7 @@ public class FilterTasksByStatusServiceTest {
     @Tag("Functional")
     @Description("C01/US007 - Should throw error for invalid status")
     void shouldThrowErrorForInvalidStatus() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
 
         org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy(() -> taskService.filterByStatus("INVALID", userId1))
                 .isInstanceOf(IllegalArgumentException.class)

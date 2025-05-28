@@ -27,7 +27,7 @@ public class ViewSpecificTaskServiceTest {
     @Tag("Functional")
     @Description("C01/US005 - Should return a specific task by index")
     void shouldReturnSpecificTaskByIndex() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
         taskService.createTask("Estudar", "Fazer revisão de VVTS", deadline, userId1);

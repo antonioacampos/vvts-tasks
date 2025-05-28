@@ -28,7 +28,7 @@ public class RegisterClockInServiceTest {
     @Tag("Functional")
     @Description("C02/US008 - Should register clock-in and update task status to IN_PROGRESS")
     void shouldRegisterClockInAndUpdateStatus() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
         LocalDateTime startTime = LocalDateTime.now();
         Task task = taskService.createTask("Ler", "Livro A", deadline, userId1);
@@ -45,7 +45,7 @@ public class RegisterClockInServiceTest {
     @Tag("Functional")
     @Description("C01/US008 - Should throw error when trying to clock-in a completed task")
     void shouldThrowErrorWhenClockingInCompletedTask() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
         Task task = taskService.createTask("Estudar", "Matéria X", deadline, userId1);
@@ -63,7 +63,7 @@ public class RegisterClockInServiceTest {
     @Tag("Functional")
     @Description("C03/US008 - Should not allow clock-in if task is already in progress")
     void shouldNotAllowClockInIfTaskIsAlreadyInProgress() {
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
         Task task = taskService.createTask("Projeto", "Clock-in duplo", deadline, userId1);
@@ -80,7 +80,7 @@ public class RegisterClockInServiceTest {
     @Tag("Functional")
     @Description("Should not allow clock-in in the future")
     void shouldNotAllowClockInInTheFuture(){
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
         Task task = taskService.createTask("Projeto", "Clock-in futuro", deadline, userId1);
@@ -96,7 +96,7 @@ public class RegisterClockInServiceTest {
     @Tag("Functional")
     @Description("Should not allow clock-in null")
     void shouldNotAllowClockInNull(){
-        TaskService taskService = new TaskService();
+        TaskService taskService = new TaskService(taskServiceDB);
         LocalDateTime deadline = LocalDateTime.now().plusDays(1);
 
         Task task = taskService.createTask("Projeto", "Clock-in null", deadline, userId1);
