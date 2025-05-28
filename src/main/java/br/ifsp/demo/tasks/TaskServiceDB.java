@@ -44,6 +44,14 @@ public class TaskServiceDB {
     public TaskEntity clockIn(UUID taskId, LocalDateTime startTime, UUID userId) {
         TaskEntity task = getByIdAndUser(taskId, userId);
 
+        if (startTime == null) {
+            throw new IllegalArgumentException("Start time cannot be null");
+        }
+
+        if (startTime.isAfter(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Start time cannot be in the future");
+        }
+
         if (task.getStatus() != TaskStatus.PENDING) {
             throw new IllegalStateException("Only PENDING tasks can be started.");
         }
