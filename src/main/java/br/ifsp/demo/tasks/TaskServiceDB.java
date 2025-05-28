@@ -41,14 +41,14 @@ public class TaskServiceDB {
         );
     }
 
-    public TaskEntity clockIn(UUID taskId, UUID userId) {
+    public TaskEntity clockIn(UUID taskId, LocalDateTime startTime, UUID userId) {
         TaskEntity task = getByIdAndUser(taskId, userId);
 
         if (task.getStatus() != TaskStatus.PENDING) {
             throw new IllegalStateException("Only PENDING tasks can be started.");
         }
 
-        task.setStartTime(LocalDateTime.now());
+        task.setStartTime(startTime);
         task.setStatus(TaskStatus.IN_PROGRESS);
 
         return repository.save(task);
