@@ -2,8 +2,6 @@ package br.ifsp.demo.tasks;
 import br.ifsp.demo.tasks.dtos.CreateTaskDTO;
 import lombok.RequiredArgsConstructor;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -32,72 +30,61 @@ public class TaskService {
     }
 
     public String getAllInformation(UUID userId) {
-        return tasks.stream()
-                .filter(task -> task.getUserId().equals(userId))
+        return taskServiceDB.getAllByUser(userId).stream()
+                .map(this::convertToTask)
                 .map(Task::toString)
                 .collect(Collectors.joining("\n"));
     }
 
-    public void deleteTask(int index, UUID userId) {
-        Task task = findTaskByUserId(userId, index);
-        tasks.remove(task);
+    public void deleteTask(UUID taskId, UUID userId) {
+        taskServiceDB.deleteTask(taskId, userId);
     }
 
-    public Task getTask(int index, UUID userId) {
-        return findTaskByUserId(userId, index);
+    public Task getTask(UUID taskId, UUID userId) {
+        TaskEntity taskEntity = taskServiceDB.getTask(taskId, userId);
+        return convertToTask(taskEntity);
     }
 
-    public void markAsCompleted(int index, UUID userId) {
-        Task task = findTaskByUserId(userId, index);
-        task.markAsCompleted();
+    public Task markAsCompleted(UUID taskId, UUID userId) {
+        TaskEntity taskEntity = taskServiceDB.markAsCompleted(taskId, userId);
+        return convertToTask(taskEntity);
     }
 
     public List<Task> filterByStatus(String statusString, UUID userId) {
-        TaskStatus status;
-        try {
-            status = TaskStatus.valueOf(statusString.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid status: " + statusString);
-        }
-
-        return tasks.stream()
-                .filter(task -> task.getUserId().equals(userId) && task.getStatus() == status)
+        return taskServiceDB.filterByStatus(statusString, userId).stream()
+                .map(this::convertToTask)
                 .collect(Collectors.toList());
     }
 
-    public void clockIn(int index, LocalDateTime startTime, UUID userId) {
-        Task task = findTaskByUserId(userId, index);
-        task.clockIn(startTime);
+    public Task clockIn(UUID taskId, LocalDateTime startTime, UUID userId) {
+        TaskEntity taskEntity = taskServiceDB.clockIn(taskId, startTime, userId);
+        return convertToTask(taskEntity);
     }
 
-    public void clockOut(int index, LocalDateTime finishTime, UUID userId) {
-        Task task = findTaskByUserId(userId, index);
-        task.clockOut(finishTime);
+    public Task clockOut(UUID taskId, LocalDateTime finishTime, UUID userId) {
+        TaskEntity taskEntity = taskServiceDB.clockOut(taskId, finishTime, userId);
+        return convertToTask(taskEntity);
     }
 
-    public long getSpentTime(int index, UUID userId) {
-        Task task = findTaskByUserId(userId, index);
+    public long getSpentTime(UUID taskId, UUID userId) {
+        TaskEntity task = taskServiceDB.getTask(taskId, userId);
         return task.getTimeSpent();
     }
 
-    public boolean checkForTimeExceeded(int index, UUID userId) {
-        Task task = findTaskByUserId(userId, index);
-        checkAndUpdateStatusForTimeExceeded(task);
-        return task.getStatus() == TaskStatus.TIME_EXCEEDED;
+    public boolean checkForTimeExceeded(UUID taskId, UUID userId, LocalDateTime currentTime) {
+        return taskServiceDB.checkForTimeExceeded(taskId, userId, currentTime);
     }
 
-    private void checkAndUpdateStatusForTimeExceeded(Task task) {
-        if (task.getStatus() == TaskStatus.IN_PROGRESS) {
-            long timeExceeded = ChronoUnit.MINUTES.between(task.getStartTime(), LocalDateTime.now());
-            long tolerance = (long) (task.getEstimatedTime() * 0.10);
-            if (timeExceeded > task.getEstimatedTime() + tolerance) {
-                task.setStatus(TaskStatus.TIME_EXCEEDED);
-                task.setSuggestion("Please re-evaluate or adjust the task.");
-            } else {
-                task.setStatus(TaskStatus.TIME_EXCEEDED);
-                task.setSuggestion(null);
-            }
-        }
+    public String checkAndNotifyTimeExceeded(UUID taskId, UUID userId, LocalDateTime currentTime) {
+        return taskServiceDB.checkAndNotifyTimeExceeded(taskId, userId, currentTime);
+    }
+
+    public String checkForClockOutForgotten(UUID taskId, UUID userId, LocalDateTime currentTime) {
+        return taskServiceDB.checkForClockOutForgotten(taskId, userId, currentTime);
+    }
+
+    public String checkForClockOutForgottenInCompletedTask(UUID taskId, UUID userId) {
+        return taskServiceDB.checkForClockOutForgottenInCompletedTask(taskId, userId);
     }
 
     private Task convertToTask(TaskEntity taskEntity) {
