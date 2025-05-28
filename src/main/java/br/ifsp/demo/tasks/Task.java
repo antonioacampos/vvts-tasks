@@ -13,8 +13,8 @@ public class Task {
 
     private LocalDateTime startTime;
     private LocalDateTime finishTime;
-    private long timeSpent;
-    private long estimatedTime;
+    private Long timeSpent;
+    private Long estimatedTime;
 
     private String suggestion;
 
@@ -122,15 +122,15 @@ public class Task {
         return finishTime;
     }
 
-    public long getTimeSpent() {
+    public Long getTimeSpent() {
         return timeSpent;
     }
 
-    public void setEstimatedTime(long estimatedTime) {
+    public void setEstimatedTime(Long estimatedTime) {
         this.estimatedTime = estimatedTime;
     }
 
-    public long getEstimatedTime() {
+    public Long getEstimatedTime() {
         return estimatedTime;
     }
 
