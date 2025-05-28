@@ -23,11 +23,19 @@ public class TaskEntity {
     @Enumerated(EnumType.STRING)
     private TaskStatus status;
 
+    @Column(nullable = true)
     private LocalDateTime startTime;
-    private LocalDateTime finishTime;
-    private long timeSpent;
-    private long estimatedTime;
 
+    @Column(nullable = true)
+    private LocalDateTime finishTime;
+
+    @Column(nullable = true)
+    private Long timeSpent;
+
+    @Column(nullable = true)
+    private Long estimatedTime;
+
+    @Column(nullable = true)
     private String suggestion;
 
     private UUID userId;
