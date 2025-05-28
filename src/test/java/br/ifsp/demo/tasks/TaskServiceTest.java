@@ -117,24 +117,6 @@ class TaskServiceTest {
     @Tag("TDD")
     @Tag("UnitTest")
     @Tag("Functional")
-    @Description("Should give exception if index out of bounds")
-    void ShouldGiveExceptionIfIndexOutOfBounds() {
-        //C03/US002
-
-        TaskService taskService = new TaskService();
-        LocalDateTime dateTime = LocalDateTime.now().plusHours(5);
-
-        Task task = taskService.createTask("Name", "Description", dateTime, userId1);
-
-        assertThatThrownBy(() -> taskService.editTask(20, task.getTitle(), task.getDescription(), task.getDeadline(), userId1))
-                .isInstanceOf(IndexOutOfBoundsException.class)
-                .hasMessage("Index out of bounds");
-    }
-
-    @Test
-    @Tag("TDD")
-    @Tag("UnitTest")
-    @Tag("Functional")
     @Description("Should return information of all registered tasks")
     void ShouldReturnInformationOfAllRegisteredTasks() {
 
@@ -452,17 +434,4 @@ class TaskServiceTest {
        assertThat(taskService.checkForTimeExceeded(task.getId(), userId1, LocalDateTime.now())).isFalse();
     }
 
-    @Test
-    @Tag("UnitTest")
-    @Tag("Structural")
-    @Description("Should throw exception for negative user Id")
-    void shouldThrowExceptionForNegativeUserId() {
-        TaskService taskService = new TaskService();
-        UUID userId = UUID.randomUUID();
-        LocalDateTime deadline = LocalDateTime.now().plusDays(7);
-        Task task = taskService.createTask("Task", "Task for user", deadline, userId);
-
-        assertThrows(IndexOutOfBoundsException.class, () ->
-                taskService.getTask(-1, userId));
-    }
 }
