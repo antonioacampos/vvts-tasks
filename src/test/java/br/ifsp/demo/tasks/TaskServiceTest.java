@@ -31,7 +31,7 @@ class TaskServiceTest {
         //C02/US001
         TaskService taskService = new TaskService(taskServiceDB);
 
-        LocalDateTime dateTime = LocalDateTime.of(2025, 5, 28, 10, 40);
+        LocalDateTime dateTime = LocalDateTime.now().plusDays(30);
         long estimatedTime = 120;
 
         Task task = taskService.createTask("Name", "Description", dateTime, estimatedTime, userId1);
