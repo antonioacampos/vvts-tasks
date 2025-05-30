@@ -107,4 +107,20 @@ public class TaskMutationTest {
         assertEquals("Start time cannot be null", exception.getMessage());
     }
 
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldThrowExceptionWhenClockInWithFutureStartTime() {
+        UUID id = UUID.randomUUID();
+        Task task = new Task(id, "Tarefa", "Desc", LocalDateTime.now().plusHours(2), UUID.randomUUID());
+
+        LocalDateTime future = LocalDateTime.now().plusHours(1);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            task.clockIn(future);
+        });
+
+        assertEquals("Start time cannot be in the future", exception.getMessage());
+    }
+
 }
