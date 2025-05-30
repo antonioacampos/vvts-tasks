@@ -35,4 +35,23 @@ public class TaskMutationTest {
         assertEquals("Cannot edit task with blank title", thrown.getMessage());
     }
 
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldThrowExceptionWhenEditingWithOutdatedDeadline() {
+        UUID id = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        LocalDateTime validDeadline = LocalDateTime.now().plusDays(1);
+        LocalDateTime outdatedDeadline = LocalDateTime.now().minusDays(1);
+
+        Task task = new Task(id, "Titulo", "Descricao", validDeadline, userId);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            task.setDeadline(outdatedDeadline);
+        });
+
+        assertEquals("Cannot edit task with outdated deadline", exception.getMessage());
+    }
+
+
 }
