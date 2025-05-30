@@ -162,8 +162,13 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <targetClasses></targetClasses>
-                    <targetTests></targetTests>
+                    <targetClasses>
+                        <param>br.ifsp.demo.tasks.*</param>
+                    </targetClasses>
+                    <excludedClasses>
+                        <param>br.ifsp.demo.security.*</param>
+                        <param>br.ifsp.demo.exception.*</param>
+                    </excludedClasses>
                 </configuration>
             </plugin>
             <plugin>
