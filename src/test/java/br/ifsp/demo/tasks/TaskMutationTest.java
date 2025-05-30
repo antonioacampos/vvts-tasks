@@ -81,5 +81,30 @@ public class TaskMutationTest {
         assertEquals("Only pending tasks can be started", exception.getMessage());
     }
 
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldThrowExceptionWhenMarkingAsCompletedWithInvalidStatus() {
+        UUID id = UUID.randomUUID();
+        Task task = new Task(id, "Tarefa", "Descrição", LocalDateTime.now().plusHours(1), UUID.randomUUID());
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, task::markAsCompleted);
+
+        assertEquals("Task must be in progress to be marked as completed", exception.getMessage());
+    }
+
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldThrowExceptionWhenClockInWithNullStartTime() {
+        UUID id = UUID.randomUUID();
+        Task task = new Task(id, "Tarefa", "Desc", LocalDateTime.now().plusHours(2), UUID.randomUUID());
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            task.clockIn(null);
+        });
+
+        assertEquals("Start time cannot be null", exception.getMessage());
+    }
 
 }
