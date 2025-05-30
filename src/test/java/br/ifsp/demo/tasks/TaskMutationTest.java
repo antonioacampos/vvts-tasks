@@ -53,5 +53,19 @@ public class TaskMutationTest {
         assertEquals("Cannot edit task with outdated deadline", exception.getMessage());
     }
 
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldThrowExceptionWhenMarkingCompletedIfNotInProgress() {
+        Task task = new Task(UUID.randomUUID(), "Titulo", "Desc", LocalDateTime.now().plusDays(1), UUID.randomUUID());
+        task.setStatus(TaskStatus.PENDING); // Não está em progresso
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            task.markAsCompleted();
+        });
+
+        assertEquals("Task must be in progress to be marked as completed", exception.getMessage());
+    }
+
 
 }
