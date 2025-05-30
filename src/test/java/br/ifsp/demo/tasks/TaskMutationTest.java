@@ -123,4 +123,19 @@ public class TaskMutationTest {
         assertEquals("Start time cannot be in the future", exception.getMessage());
     }
 
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldThrowExceptionWhenClockOutWithoutBeingInProgress() {
+        UUID id = UUID.randomUUID();
+        Task task = new Task(id, "Tarefa", "Desc", LocalDateTime.now().plusHours(1), UUID.randomUUID());
+
+        LocalDateTime finish = LocalDateTime.now().plusHours(1);
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            task.clockOut(finish);
+        });
+
+        assertEquals("Task must be in progress to be clocked out", exception.getMessage());
+    }
 }
