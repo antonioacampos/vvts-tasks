@@ -67,5 +67,19 @@ public class TaskMutationTest {
         assertEquals("Task must be in progress to be marked as completed", exception.getMessage());
     }
 
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldThrowExceptionWhenClockInIfStatusNotPending() {
+        Task task = new Task(UUID.randomUUID(), "Titulo", "Desc", LocalDateTime.now().plusDays(1), UUID.randomUUID());
+        task.setStatus(TaskStatus.COMPLETED); // Status inválido
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            task.clockIn(LocalDateTime.now());
+        });
+
+        assertEquals("Only pending tasks can be started", exception.getMessage());
+    }
+
 
 }
