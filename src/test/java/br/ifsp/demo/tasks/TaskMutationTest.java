@@ -180,4 +180,14 @@ public class TaskMutationTest {
         assertEquals(90L, task.getEstimatedTime());
     }
 
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldReturnCorrectUserId() {
+        UUID userId = UUID.randomUUID();
+        Task task = new Task(UUID.randomUUID(), "Título", "Desc", LocalDateTime.now().plusHours(1), userId);
+
+        assertEquals(userId, task.getUserId());
+    }
+
 }
