@@ -20,5 +20,19 @@ public class TaskMutationTest {
 
     private final UUID userId = UUID.randomUUID();
 
-    // Os testes virão aqui, um por mutante vivo.
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldThrowExceptionWhenTitleIsBlank() {
+        UUID userId = UUID.randomUUID();
+        Task task = new Task(UUID.randomUUID(), "Valid title", "Description", LocalDateTime.now().plusDays(1), userId);
+
+        IllegalArgumentException thrown = assertThrows(
+                IllegalArgumentException.class,
+                () -> task.setTitle(" ")
+        );
+
+        assertEquals("Cannot edit task with blank title", thrown.getMessage());
+    }
+
 }
