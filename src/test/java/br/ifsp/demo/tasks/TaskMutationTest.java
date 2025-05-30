@@ -138,4 +138,20 @@ public class TaskMutationTest {
 
         assertEquals("Task must be in progress to be clocked out", exception.getMessage());
     }
+
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldReturnCorrectFinishTime() {
+        UUID id = UUID.randomUUID();
+        Task task = new Task(id, "Tarefa", "Desc", LocalDateTime.now().plusHours(1), UUID.randomUUID());
+
+        LocalDateTime start = LocalDateTime.now().minusMinutes(30);
+        LocalDateTime end = LocalDateTime.now();
+        task.clockIn(start);
+        task.clockOut(end);
+
+        assertEquals(end, task.getFinishTime());
+    }
+
 }
