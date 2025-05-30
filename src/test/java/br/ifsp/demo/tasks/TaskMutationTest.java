@@ -154,4 +154,19 @@ public class TaskMutationTest {
         assertEquals(end, task.getFinishTime());
     }
 
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldReturnCorrectTimeSpent() {
+        UUID id = UUID.randomUUID();
+        Task task = new Task(id, "Tarefa", "Desc", LocalDateTime.now().plusHours(1), UUID.randomUUID());
+
+        LocalDateTime start = LocalDateTime.now().minusMinutes(45);
+        LocalDateTime end = LocalDateTime.now();
+        task.clockIn(start);
+        task.clockOut(end);
+
+        assertEquals(45L, task.getTimeSpent());
+    }
+
 }
