@@ -434,4 +434,47 @@ class TaskServiceTest {
        assertThat(taskService.checkForTimeExceeded(task.getId(), userId1, LocalDateTime.now())).isFalse();
     }
 
+    @Test
+    @Tag("UnitTest")
+    @Tag("Mutation")
+    @Description("Should return completed task when mark as completed")
+    void shouldReturnCompletedTaskWhenMarkAsCompleted() {
+        TaskService taskService = new TaskService(taskServiceDB);
+        LocalDateTime deadline = LocalDateTime.now().plusDays(7);
+
+        Task task = taskService.createTask("Task to complete", "Task description", deadline, 60, userId1);
+        taskService.clockIn(task.getId(), LocalDateTime.now().minusMinutes(30), userId1);
+
+        Task completedTask = taskService.markAsCompleted(task.getId(), userId1);
+
+        assertThat(completedTask).isNotNull();
+        assertThat(completedTask.getTitle()).isEqualTo("Task to complete");
+        assertThat(completedTask.getStatus()).isEqualTo(TaskStatus.COMPLETED);
+    }
+
+    @Test
+    @Tag("UnitTest")
+    @Tag("Mutation")
+    @Description("Should return task with all time tracking information when clock in")
+    void shouldReturnTaskWithAllTimeTrackingInformationWhenClockIn() {
+        TaskService taskService = new TaskService(taskServiceDB);
+        LocalDateTime deadline = LocalDateTime.now().plusDays(7);
+
+        Task task = taskService.createTask("Time tracking task", "Task with time tracking", deadline, 120, userId1);
+        LocalDateTime startTime = LocalDateTime.now().minusMinutes(60);
+
+        Task clockedInTask = taskService.clockIn(task.getId(), startTime, userId1);
+
+        assertThat(clockedInTask).isNotNull();
+        assertThat(clockedInTask.getStartTime()).isEqualTo(startTime);
+        assertThat(clockedInTask.getEstimatedTime()).isEqualTo(120L);
+        assertThat(clockedInTask.getStatus()).isEqualTo(TaskStatus.IN_PROGRESS);
+
+        LocalDateTime finishTime = LocalDateTime.now();
+        Task clockedOutTask = taskService.clockOut(task.getId(), finishTime, userId1);
+
+        assertThat(clockedOutTask.getFinishTime()).isEqualTo(finishTime);
+        assertThat(clockedOutTask.getTimeSpent()).isGreaterThan(0L);
+    }
+
 }
