@@ -115,4 +115,44 @@ public class TaskMutationServiceDBTest {
         assertEquals("Task not found", exception.getMessage());
     }
 
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldSetSuggestionToNullWhenTimeExactlyAtToleranceInCheckForTimeExceeded() {
+        UUID userId = UUID.randomUUID();
+
+        CreateTaskDTO dto = new CreateTaskDTO("Tarefa E", "Desc", LocalDateTime.now().plusHours(1), 100L, null);
+        TaskEntity task = taskServiceDB.create(dto, userId);
+        task = taskServiceDB.clockIn(task.getId(), LocalDateTime.now(), userId);
+
+        // 100 + 10% = 110 minutos
+        LocalDateTime currentTime = task.getStartTime().plusMinutes(110);
+
+        boolean result = taskServiceDB.checkForTimeExceeded(task.getId(), userId, currentTime);
+
+        assertTrue(result);
+        TaskEntity updated = repository.findById(task.getId()).get();
+        assertNull(updated.getSuggestion()); // Mata mutante do setSuggestion(null)
+    }
+
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldSetSuggestionToNullWhenTimeExactlyAtToleranceInCheckAndNotifyTimeExceeded() {
+        UUID userId = UUID.randomUUID();
+
+        CreateTaskDTO dto = new CreateTaskDTO("Tarefa F", "Desc", LocalDateTime.now().plusHours(1), 100L, null);
+        TaskEntity task = taskServiceDB.create(dto, userId);
+        task = taskServiceDB.clockIn(task.getId(), LocalDateTime.now(), userId);
+
+        // Exatamente no limite de tolerância
+        LocalDateTime currentTime = task.getStartTime().plusMinutes(110);
+
+        String message = taskServiceDB.checkAndNotifyTimeExceeded(task.getId(), userId, currentTime);
+
+        assertEquals("Time exceeded! Please register the clock-out.", message);
+        TaskEntity updated = repository.findById(task.getId()).get();
+        assertNull(updated.getSuggestion()); // Mata mutante do setSuggestion(null)
+    }
+
 }
