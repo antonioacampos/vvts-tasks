@@ -101,4 +101,18 @@ public class TaskMutationServiceDBTest {
         assertNull(updated.getSuggestion()); // Confirmamos que setSuggestion(null) foi chamado
     }
 
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldThrowExceptionWhenTaskNotFoundInGetTask() {
+        UUID nonExistentId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
+            taskServiceDB.getTask(nonExistentId, userId);
+        });
+
+        assertEquals("Task not found", exception.getMessage());
+    }
+
 }
