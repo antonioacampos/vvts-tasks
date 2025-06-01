@@ -36,31 +36,24 @@ public class TaskMutationServiceDBTest {
     @Test
     @Tag("Mutation")
     @Tag("UnitTest")
-    void givenTaskWithinTolerance_whenCheckForTimeExceeded_thenReturnTrueAndSuggestionNull() {
-        TaskEntity task = createAndStartTask(userId, 100L, 105);
-        boolean result = taskServiceDB.checkForTimeExceeded(task.getId(), userId, LocalDateTime.now());
-        assertTrue(result);
-        assertNull(task.getSuggestion());
-    }
+    void testCheckForTimeExceededScenarios() {
+        // Cenário 1: dentro da tolerância
+        TaskEntity task1 = createAndStartTask(userId, 100L, 105);
+        boolean result1 = taskServiceDB.checkForTimeExceeded(task1.getId(), userId, LocalDateTime.now());
+        assertTrue(result1);
+        assertNull(task1.getSuggestion());
 
-    @Test
-    @Tag("Mutation")
-    @Tag("UnitTest")
-    void givenStatusNotInProgress_whenCheckForTimeExceeded_thenReturnFalse() {
+        // Cenário 2: status diferente de IN_PROGRESS
         CreateTaskDTO dto = new CreateTaskDTO("X", "Desc", LocalDateTime.now().plusHours(1), 60L, null);
-        TaskEntity task = taskServiceDB.create(dto, userId);
-        boolean result = taskServiceDB.checkForTimeExceeded(task.getId(), userId, LocalDateTime.now().plusMinutes(90));
-        assertFalse(result);
-    }
+        TaskEntity task2 = taskServiceDB.create(dto, userId);
+        boolean result2 = taskServiceDB.checkForTimeExceeded(task2.getId(), userId, LocalDateTime.now().plusMinutes(90));
+        assertFalse(result2);
 
-    @Test
-    @Tag("Mutation")
-    @Tag("UnitTest")
-    void givenTimeExactlyAtTolerance_whenCheckForTimeExceeded_thenSuggestionNull() {
-        TaskEntity task = createAndStartTask(userId, 100L, 110);
-        boolean result = taskServiceDB.checkForTimeExceeded(task.getId(), userId, LocalDateTime.now());
-        assertTrue(result);
-        assertNull(repository.findById(task.getId()).get().getSuggestion());
+        // Cenário 3: exatamente na tolerância
+        TaskEntity task3 = createAndStartTask(userId, 100L, 110);
+        boolean result3 = taskServiceDB.checkForTimeExceeded(task3.getId(), userId, LocalDateTime.now());
+        assertTrue(result3);
+        assertNull(repository.findById(task3.getId()).get().getSuggestion());
     }
 
     // ---------------------- checkAndNotifyTimeExceeded ----------------------
@@ -68,47 +61,30 @@ public class TaskMutationServiceDBTest {
     @Test
     @Tag("Mutation")
     @Tag("UnitTest")
-    void givenTaskWithinTolerance_whenCheckAndNotify_thenSuggestionNull() {
-        TaskEntity task = createAndStartTask(userId, 100L, 105);
-        String message = taskServiceDB.checkAndNotifyTimeExceeded(task.getId(), userId, LocalDateTime.now());
-        assertEquals(TIME_EXCEEDED_MSG, message);
-        assertNull(repository.findById(task.getId()).get().getSuggestion());
-    }
+    void testCheckAndNotifyTimeExceededScenarios() {
+        // Cenário 1: dentro da tolerância
+        TaskEntity task1 = createAndStartTask(userId, 100L, 105);
+        String msg1 = taskServiceDB.checkAndNotifyTimeExceeded(task1.getId(), userId, LocalDateTime.now());
+        assertEquals(TIME_EXCEEDED_MSG, msg1);
+        assertNull(repository.findById(task1.getId()).get().getSuggestion());
 
-    @Test
-    @Tag("Mutation")
-    @Tag("UnitTest")
-    void givenSuggestionNullAlready_whenCheckAndNotify_thenKeepSuggestionNull() {
-        TaskEntity task = createAndStartTask(userId, 60L, 58);
-        String result = taskServiceDB.checkAndNotifyTimeExceeded(task.getId(), userId, LocalDateTime.now());
-        assertEquals(TIME_EXCEEDED_MSG, result);
-        assertNull(repository.findById(task.getId()).get().getSuggestion());
-    }
+        // Cenário 2: sugestão já nula (tempo < estimado)
+        TaskEntity task2 = createAndStartTask(userId, 60L, 58);
+        String msg2 = taskServiceDB.checkAndNotifyTimeExceeded(task2.getId(), userId, LocalDateTime.now());
+        assertEquals(TIME_EXCEEDED_MSG, msg2);
+        assertNull(repository.findById(task2.getId()).get().getSuggestion());
 
-    @Test
-    @Tag("Mutation")
-    @Tag("UnitTest")
-    void givenTimeExactlyAtTolerance_whenCheckAndNotify_thenSuggestionNull() {
-        TaskEntity task = createAndStartTask(userId, 100L, 110);
-        String result = taskServiceDB.checkAndNotifyTimeExceeded(task.getId(), userId, LocalDateTime.now());
-        assertEquals(TIME_EXCEEDED_MSG, result);
-        assertNull(repository.findById(task.getId()).get().getSuggestion());
-    }
+        // Cenário 3: exatamente no limite de tolerância
+        TaskEntity task3 = createAndStartTask(userId, 100L, 110);
+        String msg3 = taskServiceDB.checkAndNotifyTimeExceeded(task3.getId(), userId, LocalDateTime.now());
+        assertEquals(TIME_EXCEEDED_MSG, msg3);
+        assertNull(repository.findById(task3.getId()).get().getSuggestion());
 
-    @Test
-    @Tag("Mutation")
-    @Tag("UnitTest")
-    void shouldSuggestReevaluationWhenExceededBeyondTolerance() {
-        CreateTaskDTO dto = new CreateTaskDTO("Tarefa Mutante", "Divisão", LocalDateTime.now().plusHours(1), 100L, null);
-        TaskEntity task = taskServiceDB.create(dto, userId);
-        task = taskServiceDB.clockIn(task.getId(), LocalDateTime.now(), userId);
-
-        // 100min + 10% = 110min → vamos usar 115min para ultrapassar a tolerância
-        LocalDateTime currentTime = task.getStartTime().plusMinutes(115);
-
-        String result = taskServiceDB.checkAndNotifyTimeExceeded(task.getId(), userId, currentTime);
-
-        assertEquals("Please re-evaluate or adjust the task.", result);
+        // Cenário 4: ultrapassando a tolerância
+        TaskEntity task4 = createAndStartTask(userId, 100L, 115);
+        String msg4 = taskServiceDB.checkAndNotifyTimeExceeded(task4.getId(), userId, LocalDateTime.now());
+        assertEquals("Please re-evaluate or adjust the task.", msg4);
+        assertNotNull(repository.findById(task4.getId()).get().getSuggestion());
     }
 
     // ---------------------- getTask ----------------------
