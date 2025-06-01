@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -198,6 +199,32 @@ public class TaskMutationServiceDBTest {
         TaskEntity updated = taskServiceDB.updateTask(task);
 
         assertEquals("Nova descricao", updated.getDescription());
+    }
+
+    @Test
+    @Tag("Mutation")
+    void shouldReturnOnlyTasksWithGivenStatus() {
+        UUID userId = UUID.randomUUID();
+
+        // Task com status PENDING
+        TaskEntity task1 = taskServiceDB.create(
+                new CreateTaskDTO("Pending Task", "Desc", LocalDateTime.now().plusDays(1), 60L, null),
+                userId
+        );
+
+        // Task com status COMPLETED
+        TaskEntity task2 = taskServiceDB.create(
+                new CreateTaskDTO("Completed Task", "Desc", LocalDateTime.now().plusDays(1), 60L, null),
+                userId
+        );
+        taskServiceDB.clockIn(task2.getId(), LocalDateTime.now(), userId);
+        taskServiceDB.clockOut(task2.getId(), LocalDateTime.now().plusMinutes(30), userId);
+
+        // Filtrando apenas as COMPLETED
+        List<TaskEntity> completed = taskServiceDB.filterByStatus("COMPLETED", userId);
+
+        assertEquals(1, completed.size());
+        assertEquals("Completed Task", completed.get(0).getTitle());
     }
 
 }
