@@ -434,4 +434,21 @@ class TaskServiceTest {
        assertThat(taskService.checkForTimeExceeded(task.getId(), userId1, LocalDateTime.now())).isFalse();
     }
 
+    @Test
+    @Tag("UnitTest")
+    @Tag("Functional")
+    @Description("Should return completed task when mark as completed")
+    void shouldReturnCompletedTaskWhenMarkAsCompleted() {
+        TaskService taskService = new TaskService(taskServiceDB);
+        LocalDateTime deadline = LocalDateTime.now().plusDays(7);
+
+        Task task = taskService.createTask("Task to complete", "Task description", deadline, 60, userId1);
+        taskService.clockIn(task.getId(), LocalDateTime.now().minusMinutes(30), userId1);
+
+        Task completedTask = taskService.markAsCompleted(task.getId(), userId1);
+
+        assertThat(completedTask).isNotNull();
+        assertThat(completedTask.getTitle()).isEqualTo("Task to complete");
+        assertThat(completedTask.getStatus()).isEqualTo(TaskStatus.COMPLETED);
+    }
 }
