@@ -218,6 +218,7 @@ class TaskServiceDBTest {
 
     @Test
     @Tag("Mutation")
+    @Tag("UnitTest")
     void givenInvalidId_whenGetTask_thenThrowException() {
         UUID invalidId = UUID.randomUUID();
         Exception ex = assertThrows(IllegalArgumentException.class, () -> service.getTask(invalidId, userId));
@@ -226,6 +227,7 @@ class TaskServiceDBTest {
 
     @Test
     @Tag("Mutation")
+    @Tag("UnitTest")
     void givenUpdatedDescription_whenUpdateTask_thenPersistNewDescription() {
         TaskEntity task = createTask("Original");
         task.setDescription("Nova descricao");
@@ -235,6 +237,7 @@ class TaskServiceDBTest {
 
     @Test
     @Tag("Mutation")
+    @Tag("UnitTest")
     void givenTasksWithDifferentStatus_whenFilterByCompleted_thenReturnOnlyCompletedTasks() {
         service.create(new CreateTaskDTO("Pending Task", "Desc", LocalDateTime.now().plusDays(1), 60L, null), userId);
 
