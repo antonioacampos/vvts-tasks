@@ -95,6 +95,22 @@ public class TaskMutationServiceDBTest {
         assertNull(repository.findById(task.getId()).get().getSuggestion());
     }
 
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldSuggestReevaluationWhenExceededBeyondTolerance() {
+        CreateTaskDTO dto = new CreateTaskDTO("Tarefa Mutante", "Divisão", LocalDateTime.now().plusHours(1), 100L, null);
+        TaskEntity task = taskServiceDB.create(dto, userId);
+        task = taskServiceDB.clockIn(task.getId(), LocalDateTime.now(), userId);
+
+        // 100min + 10% = 110min → vamos usar 115min para ultrapassar a tolerância
+        LocalDateTime currentTime = task.getStartTime().plusMinutes(115);
+
+        String result = taskServiceDB.checkAndNotifyTimeExceeded(task.getId(), userId, currentTime);
+
+        assertEquals("Please re-evaluate or adjust the task.", result);
+    }
+
     // ---------------------- getTask ----------------------
 
     @Test
