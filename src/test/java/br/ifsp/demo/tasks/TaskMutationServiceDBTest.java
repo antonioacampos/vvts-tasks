@@ -64,4 +64,23 @@ public class TaskMutationServiceDBTest {
         assertNull(updated.getSuggestion()); // Confirmar setSuggestion(null) foi executado
     }
 
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldNotifyWithinToleranceInCheckAndNotifyTimeExceeded() {
+        UUID userId = UUID.randomUUID();
+
+        CreateTaskDTO dto = new CreateTaskDTO("Tarefa C", "Desc", LocalDateTime.now().plusHours(1), 100L, null);
+        TaskEntity task = taskServiceDB.create(dto, userId);
+        task = taskServiceDB.clockIn(task.getId(), LocalDateTime.now(), userId);
+
+        // currentTime dentro da tolerância (ex: 108min de 110min)
+        LocalDateTime currentTime = task.getStartTime().plusMinutes(108);
+
+        String message = taskServiceDB.checkAndNotifyTimeExceeded(task.getId(), userId, currentTime);
+
+        // A mensagem padrão eh o esperado (sem sugestão)
+        assertEquals("Time exceeded! Please register the clock-out.", message);
+    }
+
 }
