@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,27 +21,24 @@ public class TaskMutationServiceDBTest {
     @Autowired
     private JpaTaskRepository repository;
 
-    private final UUID userId = UUID.randomUUID();
+    private static final UUID userId = UUID.randomUUID();
+    private static final long DEFAULT_ESTIMATED_TIME = 100L;
+    private static final String TIME_EXCEEDED_MSG = "Time exceeded! Please register the clock-out.";
+
+    private TaskEntity createAndStartTask(UUID userId, long estimatedTime, long minutesAgo) {
+        CreateTaskDTO dto = new CreateTaskDTO("Teste", "Desc", LocalDateTime.now().plusHours(1), estimatedTime, null);
+        TaskEntity task = taskServiceDB.create(dto, userId);
+        return taskServiceDB.clockIn(task.getId(), LocalDateTime.now().minusMinutes(minutesAgo), userId);
+    }
+
+    // ---------------------- checkForTimeExceeded ----------------------
 
     @Test
     @Tag("Mutation")
     @Tag("UnitTest")
-    void shouldReturnFalseWhenTimeNotExceeded() {
-        UUID userId = UUID.randomUUID();
-
-        // estimated time = 100min -> tolerance = 10min
-        CreateTaskDTO dto = new CreateTaskDTO("Tarefa A", "Desc", LocalDateTime.now().plusHours(1), 100L, null);
-        TaskEntity task = taskServiceDB.create(dto, userId);
-
-        // clockIn agora
-        task = taskServiceDB.clockIn(task.getId(), LocalDateTime.now(), userId);
-
-        // currentTime = start + 105min (ainda está dentro da tolerância de 110min)
-        LocalDateTime currentTime = task.getStartTime().plusMinutes(105);
-
-        boolean result = taskServiceDB.checkForTimeExceeded(task.getId(), userId, currentTime);
-
-        // Esperado: ainda não deve ter excedido
+    void givenTaskWithinTolerance_whenCheckForTimeExceeded_thenReturnTrueAndSuggestionNull() {
+        TaskEntity task = createAndStartTask(userId, 100L, 105);
+        boolean result = taskServiceDB.checkForTimeExceeded(task.getId(), userId, LocalDateTime.now());
         assertTrue(result);
         assertNull(task.getSuggestion());
     }
@@ -49,182 +46,94 @@ public class TaskMutationServiceDBTest {
     @Test
     @Tag("Mutation")
     @Tag("UnitTest")
-    void shouldSetSuggestionToNullWhenTimeWithinTolerance() {
-        UUID userId = UUID.randomUUID();
-
-        CreateTaskDTO dto = new CreateTaskDTO("Tarefa B", "Desc", LocalDateTime.now().plusHours(1), 100L, null);
-        TaskEntity task = taskServiceDB.create(dto, userId);
-
-        task = taskServiceDB.clockIn(task.getId(), LocalDateTime.now(), userId);
-
-        // Dentro da tolerância (<= 110min)
-        LocalDateTime currentTime = task.getStartTime().plusMinutes(108);
-
-        boolean result = taskServiceDB.checkForTimeExceeded(task.getId(), userId, currentTime);
-
-        assertTrue(result);
-        TaskEntity updated = repository.findById(task.getId()).get();
-        assertNull(updated.getSuggestion()); // Confirmar setSuggestion(null) foi executado
-    }
-
-    @Test
-    @Tag("Mutation")
-    @Tag("UnitTest")
-    void shouldNotifyWithinToleranceInCheckAndNotifyTimeExceeded() {
-        UUID userId = UUID.randomUUID();
-
-        CreateTaskDTO dto = new CreateTaskDTO("Tarefa C", "Desc", LocalDateTime.now().plusHours(1), 100L, null);
-        TaskEntity task = taskServiceDB.create(dto, userId);
-        task = taskServiceDB.clockIn(task.getId(), LocalDateTime.now(), userId);
-
-        // currentTime dentro da tolerância (ex: 108min de 110min)
-        LocalDateTime currentTime = task.getStartTime().plusMinutes(108);
-
-        String message = taskServiceDB.checkAndNotifyTimeExceeded(task.getId(), userId, currentTime);
-
-        // A mensagem padrão eh o esperado (sem sugestão)
-        assertEquals("Time exceeded! Please register the clock-out.", message);
-    }
-
-    @Test
-    @Tag("Mutation")
-    @Tag("UnitTest")
-    void shouldClearSuggestionWhenTimeNotExceededInCheckAndNotify() {
-        UUID userId = UUID.randomUUID();
-
-        CreateTaskDTO dto = new CreateTaskDTO("Tarefa D", "Desc", LocalDateTime.now().plusHours(1), 100L, null);
-        TaskEntity task = taskServiceDB.create(dto, userId);
-        task = taskServiceDB.clockIn(task.getId(), LocalDateTime.now(), userId);
-
-        // Dentro da tolerância (não deve atribuir sugestão)
-        LocalDateTime currentTime = task.getStartTime().plusMinutes(105);
-        taskServiceDB.checkAndNotifyTimeExceeded(task.getId(), userId, currentTime);
-
-        TaskEntity updated = repository.findById(task.getId()).get();
-        assertNull(updated.getSuggestion()); // Confirmamos que setSuggestion(null) foi chamado
-    }
-
-    @Test
-    @Tag("Mutation")
-    @Tag("UnitTest")
-    void shouldThrowExceptionWhenTaskNotFoundInGetTask() {
-        UUID nonExistentId = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
-
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            taskServiceDB.getTask(nonExistentId, userId);
-        });
-
-        assertEquals("Task not found", exception.getMessage());
-    }
-
-    @Test
-    @Tag("Mutation")
-    @Tag("UnitTest")
-    void shouldSetSuggestionToNullWhenTimeExactlyAtToleranceInCheckForTimeExceeded() {
-        UUID userId = UUID.randomUUID();
-
-        CreateTaskDTO dto = new CreateTaskDTO("Tarefa E", "Desc", LocalDateTime.now().plusHours(1), 100L, null);
-        TaskEntity task = taskServiceDB.create(dto, userId);
-        task = taskServiceDB.clockIn(task.getId(), LocalDateTime.now(), userId);
-
-        // 100 + 10% = 110 minutos
-        LocalDateTime currentTime = task.getStartTime().plusMinutes(110);
-
-        boolean result = taskServiceDB.checkForTimeExceeded(task.getId(), userId, currentTime);
-
-        assertTrue(result);
-        TaskEntity updated = repository.findById(task.getId()).get();
-        assertNull(updated.getSuggestion()); // Mata mutante do setSuggestion(null)
-    }
-
-    @Test
-    @Tag("Mutation")
-    @Tag("UnitTest")
-    void shouldSetSuggestionToNullWhenTimeExactlyAtToleranceInCheckAndNotifyTimeExceeded() {
-        UUID userId = UUID.randomUUID();
-
-        CreateTaskDTO dto = new CreateTaskDTO("Tarefa F", "Desc", LocalDateTime.now().plusHours(1), 100L, null);
-        TaskEntity task = taskServiceDB.create(dto, userId);
-        task = taskServiceDB.clockIn(task.getId(), LocalDateTime.now(), userId);
-
-        // Exatamente no limite de tolerância
-        LocalDateTime currentTime = task.getStartTime().plusMinutes(110);
-
-        String message = taskServiceDB.checkAndNotifyTimeExceeded(task.getId(), userId, currentTime);
-
-        assertEquals("Time exceeded! Please register the clock-out.", message);
-        TaskEntity updated = repository.findById(task.getId()).get();
-        assertNull(updated.getSuggestion()); // Mata mutante do setSuggestion(null)
-    }
-
-    // Teste 1: Deve retornar false quando status != IN_PROGRESS
-    @Test
-    @Tag("Mutation")
-    void shouldReturnFalseWhenStatusIsNotInProgress() {
+    void givenStatusNotInProgress_whenCheckForTimeExceeded_thenReturnFalse() {
         CreateTaskDTO dto = new CreateTaskDTO("X", "Desc", LocalDateTime.now().plusHours(1), 60L, null);
         TaskEntity task = taskServiceDB.create(dto, userId);
-
         boolean result = taskServiceDB.checkForTimeExceeded(task.getId(), userId, LocalDateTime.now().plusMinutes(90));
-
         assertFalse(result);
     }
 
-    // Teste 2: Deve manter sugestão como null quando já está como null
     @Test
     @Tag("Mutation")
-    void shouldKeepSuggestionNullWhenAlreadyNull() {
-        CreateTaskDTO dto = new CreateTaskDTO("X", "Desc", LocalDateTime.now().plusHours(1), 60L, null);
-        TaskEntity task = taskServiceDB.create(dto, userId);
-
-        // Setar startTime para 60 - 2 = 58 min atrás (dentro da tolerância de 66)
-        task = taskServiceDB.clockIn(task.getId(), LocalDateTime.now().minusMinutes(58), userId);
-
-        LocalDateTime currentTime = LocalDateTime.now();
-        String result = taskServiceDB.checkAndNotifyTimeExceeded(task.getId(), userId, currentTime);
-
-        assertEquals("Time exceeded! Please register the clock-out.", result);
-        TaskEntity updated = repository.findById(task.getId()).get();
-        assertNull(updated.getSuggestion());
+    @Tag("UnitTest")
+    void givenTimeExactlyAtTolerance_whenCheckForTimeExceeded_thenSuggestionNull() {
+        TaskEntity task = createAndStartTask(userId, 100L, 110);
+        boolean result = taskServiceDB.checkForTimeExceeded(task.getId(), userId, LocalDateTime.now());
+        assertTrue(result);
+        assertNull(repository.findById(task.getId()).get().getSuggestion());
     }
 
-    // Teste 3: Deve testar updateTask e garantir que objeto é salvo
+    // ---------------------- checkAndNotifyTimeExceeded ----------------------
+
     @Test
     @Tag("Mutation")
-    void shouldUpdateTaskUsingUpdateTaskMethod() {
+    @Tag("UnitTest")
+    void givenTaskWithinTolerance_whenCheckAndNotify_thenSuggestionNull() {
+        TaskEntity task = createAndStartTask(userId, 100L, 105);
+        String message = taskServiceDB.checkAndNotifyTimeExceeded(task.getId(), userId, LocalDateTime.now());
+        assertEquals(TIME_EXCEEDED_MSG, message);
+        assertNull(repository.findById(task.getId()).get().getSuggestion());
+    }
+
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void givenSuggestionNullAlready_whenCheckAndNotify_thenKeepSuggestionNull() {
+        TaskEntity task = createAndStartTask(userId, 60L, 58);
+        String result = taskServiceDB.checkAndNotifyTimeExceeded(task.getId(), userId, LocalDateTime.now());
+        assertEquals(TIME_EXCEEDED_MSG, result);
+        assertNull(repository.findById(task.getId()).get().getSuggestion());
+    }
+
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void givenTimeExactlyAtTolerance_whenCheckAndNotify_thenSuggestionNull() {
+        TaskEntity task = createAndStartTask(userId, 100L, 110);
+        String result = taskServiceDB.checkAndNotifyTimeExceeded(task.getId(), userId, LocalDateTime.now());
+        assertEquals(TIME_EXCEEDED_MSG, result);
+        assertNull(repository.findById(task.getId()).get().getSuggestion());
+    }
+
+    // ---------------------- getTask ----------------------
+
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void givenInvalidId_whenGetTask_thenThrowException() {
+        UUID invalidId = UUID.randomUUID();
+        Exception ex = assertThrows(IllegalArgumentException.class, () -> taskServiceDB.getTask(invalidId, userId));
+        assertEquals("Task not found", ex.getMessage());
+    }
+
+    // ---------------------- updateTask ----------------------
+
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void givenUpdatedDescription_whenUpdateTask_thenPersistNewDescription() {
         CreateTaskDTO dto = new CreateTaskDTO("Original", "Desc", LocalDateTime.now().plusHours(1), 60L, null);
         TaskEntity task = taskServiceDB.create(dto, userId);
-
         task.setDescription("Nova descricao");
         TaskEntity updated = taskServiceDB.updateTask(task);
-
         assertEquals("Nova descricao", updated.getDescription());
     }
 
+    // ---------------------- filterByStatus ----------------------
+
     @Test
     @Tag("Mutation")
-    void shouldReturnOnlyTasksWithGivenStatus() {
-        UUID userId = UUID.randomUUID();
+    @Tag("UnitTest")
+    void givenTasksWithDifferentStatus_whenFilterByCompleted_thenReturnOnlyCompletedTasks() {
+        TaskEntity pending = taskServiceDB.create(new CreateTaskDTO("Pending Task", "Desc", LocalDateTime.now().plusDays(1), 60L, null), userId);
 
-        // Task com status PENDING
-        TaskEntity task1 = taskServiceDB.create(
-                new CreateTaskDTO("Pending Task", "Desc", LocalDateTime.now().plusDays(1), 60L, null),
-                userId
-        );
+        TaskEntity completed = taskServiceDB.create(new CreateTaskDTO("Completed Task", "Desc", LocalDateTime.now().plusDays(1), 60L, null), userId);
+        taskServiceDB.clockIn(completed.getId(), LocalDateTime.now(), userId);
+        taskServiceDB.clockOut(completed.getId(), LocalDateTime.now().plusMinutes(30), userId);
 
-        // Task com status COMPLETED
-        TaskEntity task2 = taskServiceDB.create(
-                new CreateTaskDTO("Completed Task", "Desc", LocalDateTime.now().plusDays(1), 60L, null),
-                userId
-        );
-        taskServiceDB.clockIn(task2.getId(), LocalDateTime.now(), userId);
-        taskServiceDB.clockOut(task2.getId(), LocalDateTime.now().plusMinutes(30), userId);
+        List<TaskEntity> completedList = taskServiceDB.filterByStatus("COMPLETED", userId);
 
-        // Filtrando apenas as COMPLETED
-        List<TaskEntity> completed = taskServiceDB.filterByStatus("COMPLETED", userId);
-
-        assertEquals(1, completed.size());
-        assertEquals("Completed Task", completed.get(0).getTitle());
+        assertEquals(1, completedList.size());
+        assertEquals("Completed Task", completedList.get(0).getTitle());
     }
-
 }
