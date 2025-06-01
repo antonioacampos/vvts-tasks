@@ -42,4 +42,26 @@ public class TaskMutationServiceDBTest {
         assertTrue(result);
         assertNull(task.getSuggestion());
     }
+
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldSetSuggestionToNullWhenTimeWithinTolerance() {
+        UUID userId = UUID.randomUUID();
+
+        CreateTaskDTO dto = new CreateTaskDTO("Tarefa B", "Desc", LocalDateTime.now().plusHours(1), 100L, null);
+        TaskEntity task = taskServiceDB.create(dto, userId);
+
+        task = taskServiceDB.clockIn(task.getId(), LocalDateTime.now(), userId);
+
+        // Dentro da tolerância (<= 110min)
+        LocalDateTime currentTime = task.getStartTime().plusMinutes(108);
+
+        boolean result = taskServiceDB.checkForTimeExceeded(task.getId(), userId, currentTime);
+
+        assertTrue(result);
+        TaskEntity updated = repository.findById(task.getId()).get();
+        assertNull(updated.getSuggestion()); // Confirmar setSuggestion(null) foi executado
+    }
+
 }
