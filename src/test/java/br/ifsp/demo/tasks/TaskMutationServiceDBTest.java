@@ -20,6 +20,8 @@ public class TaskMutationServiceDBTest {
     @Autowired
     private JpaTaskRepository repository;
 
+    private final UUID userId = UUID.randomUUID();
+
     @Test
     @Tag("Mutation")
     @Tag("UnitTest")
@@ -153,6 +155,49 @@ public class TaskMutationServiceDBTest {
         assertEquals("Time exceeded! Please register the clock-out.", message);
         TaskEntity updated = repository.findById(task.getId()).get();
         assertNull(updated.getSuggestion()); // Mata mutante do setSuggestion(null)
+    }
+
+    // Teste 1: Deve retornar false quando status != IN_PROGRESS
+    @Test
+    @Tag("Mutation")
+    void shouldReturnFalseWhenStatusIsNotInProgress() {
+        CreateTaskDTO dto = new CreateTaskDTO("X", "Desc", LocalDateTime.now().plusHours(1), 60L, null);
+        TaskEntity task = taskServiceDB.create(dto, userId);
+
+        boolean result = taskServiceDB.checkForTimeExceeded(task.getId(), userId, LocalDateTime.now().plusMinutes(90));
+
+        assertFalse(result);
+    }
+
+    // Teste 2: Deve manter sugestão como null quando já está como null
+    @Test
+    @Tag("Mutation")
+    void shouldKeepSuggestionNullWhenAlreadyNull() {
+        CreateTaskDTO dto = new CreateTaskDTO("X", "Desc", LocalDateTime.now().plusHours(1), 60L, null);
+        TaskEntity task = taskServiceDB.create(dto, userId);
+
+        // Setar startTime para 60 - 2 = 58 min atrás (dentro da tolerância de 66)
+        task = taskServiceDB.clockIn(task.getId(), LocalDateTime.now().minusMinutes(58), userId);
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        String result = taskServiceDB.checkAndNotifyTimeExceeded(task.getId(), userId, currentTime);
+
+        assertEquals("Time exceeded! Please register the clock-out.", result);
+        TaskEntity updated = repository.findById(task.getId()).get();
+        assertNull(updated.getSuggestion());
+    }
+
+    // Teste 3: Deve testar updateTask e garantir que objeto é salvo
+    @Test
+    @Tag("Mutation")
+    void shouldUpdateTaskUsingUpdateTaskMethod() {
+        CreateTaskDTO dto = new CreateTaskDTO("Original", "Desc", LocalDateTime.now().plusHours(1), 60L, null);
+        TaskEntity task = taskServiceDB.create(dto, userId);
+
+        task.setDescription("Nova descricao");
+        TaskEntity updated = taskServiceDB.updateTask(task);
+
+        assertEquals("Nova descricao", updated.getDescription());
     }
 
 }
