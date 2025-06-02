@@ -9,6 +9,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const username = usernameInput.value;
         const password = passwordInput.value;
 
+        if (!username) {
+            const errorDiv = document.getElementById('username-error');
+            errorDiv.textContent = 'Username is required.';
+            return;
+        }
+        if (!password) {
+            const errorDiv = document.getElementById('password-error');
+            errorDiv.textContent = 'Password is required.';
+            return;
+        }
+
         const loginData = {
             username: username,
             password: password
@@ -24,8 +35,10 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                const error = await response.json();
-                alert(`Login error: ${error.message || 'Failure to login'}`);
+                if (response.status === 401) {
+                    const errorDiv = document.getElementById('errorMessage');
+                    errorDiv.textContent = 'Username or password is incorrect.';
+                }
                 return;
             }
 
