@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
         } catch (error) {
             console.error('Error during registration:', error);
-            alert('An error occurred while trying to register.');
+            alert('Error during register. Please try again later.');
         }
     });
 

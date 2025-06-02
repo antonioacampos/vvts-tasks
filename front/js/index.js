@@ -45,16 +45,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             const token = data.token;
-            console.log(token);
-
             
             localStorage.setItem('tokenTaskVVTS', token);
 
             window.location.href = './tasklist.html'; 
             
         } catch (error) {
-            console.error('Erro ao enviar requisição de login:', error);
-            alert('Ocorreu um erro ao tentar fazer login.');
+            console.error('Error to login', error);
+            alert('Error during login. Please try again later.');
         }
         
     });
