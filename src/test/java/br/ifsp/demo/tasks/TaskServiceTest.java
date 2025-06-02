@@ -436,7 +436,7 @@ class TaskServiceTest {
 
     @Test
     @Tag("UnitTest")
-    @Tag("Functional")
+    @Tag("Mutation")
     @Description("Should return completed task when mark as completed")
     void shouldReturnCompletedTaskWhenMarkAsCompleted() {
         TaskService taskService = new TaskService(taskServiceDB);
@@ -454,7 +454,7 @@ class TaskServiceTest {
 
     @Test
     @Tag("UnitTest")
-    @Tag("Functional")
+    @Tag("Mutation")
     @Description("Should return task with all time tracking information when clock in")
     void shouldReturnTaskWithAllTimeTrackingInformationWhenClockIn() {
         TaskService taskService = new TaskService(taskServiceDB);

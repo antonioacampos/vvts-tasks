@@ -2,7 +2,6 @@ package br.ifsp.demo.tasks;
 
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -11,16 +10,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TaskMutationTest {
 
-    @Autowired
-    private TaskServiceDB taskServiceDB;
-
     private final UUID userId = UUID.randomUUID();
+
+    // --- Título e Deadline ---
 
     @Test
     @Tag("Mutation")
     @Tag("UnitTest")
-    void shouldThrowExceptionWhenTitleIsBlank() {
-        UUID userId = UUID.randomUUID();
+    void shouldThrowExceptionWhenSettingBlankTitle() {
         Task task = new Task(UUID.randomUUID(), "Valid title", "Description", LocalDateTime.now().plusDays(1), userId);
 
         IllegalArgumentException thrown = assertThrows(
@@ -34,13 +31,9 @@ public class TaskMutationTest {
     @Test
     @Tag("Mutation")
     @Tag("UnitTest")
-    void shouldThrowExceptionWhenEditingWithOutdatedDeadline() {
-        UUID id = UUID.randomUUID();
-        UUID userId = UUID.randomUUID();
-        LocalDateTime validDeadline = LocalDateTime.now().plusDays(1);
+    void shouldThrowExceptionWhenSettingOutdatedDeadline() {
         LocalDateTime outdatedDeadline = LocalDateTime.now().minusDays(1);
-
-        Task task = new Task(id, "Titulo", "Descricao", validDeadline, userId);
+        Task task = new Task(UUID.randomUUID(), "Titulo", "Descricao", LocalDateTime.now().plusDays(1), userId);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             task.setDeadline(outdatedDeadline);
@@ -49,52 +42,13 @@ public class TaskMutationTest {
         assertEquals("Cannot edit task with outdated deadline", exception.getMessage());
     }
 
-    @Test
-    @Tag("Mutation")
-    @Tag("UnitTest")
-    void shouldThrowExceptionWhenMarkingCompletedIfNotInProgress() {
-        Task task = new Task(UUID.randomUUID(), "Titulo", "Desc", LocalDateTime.now().plusDays(1), UUID.randomUUID());
-        task.setStatus(TaskStatus.PENDING); // Não está em progresso
-
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
-            task.markAsCompleted();
-        });
-
-        assertEquals("Task must be in progress to be marked as completed", exception.getMessage());
-    }
-
-    @Test
-    @Tag("Mutation")
-    @Tag("UnitTest")
-    void shouldThrowExceptionWhenClockInIfStatusNotPending() {
-        Task task = new Task(UUID.randomUUID(), "Titulo", "Desc", LocalDateTime.now().plusDays(1), UUID.randomUUID());
-        task.setStatus(TaskStatus.COMPLETED); // Status inválido
-
-        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
-            task.clockIn(LocalDateTime.now());
-        });
-
-        assertEquals("Only pending tasks can be started", exception.getMessage());
-    }
-
-    @Test
-    @Tag("Mutation")
-    @Tag("UnitTest")
-    void shouldThrowExceptionWhenMarkingAsCompletedWithInvalidStatus() {
-        UUID id = UUID.randomUUID();
-        Task task = new Task(id, "Tarefa", "Descrição", LocalDateTime.now().plusHours(1), UUID.randomUUID());
-
-        IllegalStateException exception = assertThrows(IllegalStateException.class, task::markAsCompleted);
-
-        assertEquals("Task must be in progress to be marked as completed", exception.getMessage());
-    }
+    // --- Clock In ---
 
     @Test
     @Tag("Mutation")
     @Tag("UnitTest")
     void shouldThrowExceptionWhenClockInWithNullStartTime() {
-        UUID id = UUID.randomUUID();
-        Task task = new Task(id, "Tarefa", "Desc", LocalDateTime.now().plusHours(2), UUID.randomUUID());
+        Task task = new Task(UUID.randomUUID(), "Tarefa", "Desc", LocalDateTime.now().plusHours(2), userId);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             task.clockIn(null);
@@ -107,9 +61,7 @@ public class TaskMutationTest {
     @Tag("Mutation")
     @Tag("UnitTest")
     void shouldThrowExceptionWhenClockInWithFutureStartTime() {
-        UUID id = UUID.randomUUID();
-        Task task = new Task(id, "Tarefa", "Desc", LocalDateTime.now().plusHours(2), UUID.randomUUID());
-
+        Task task = new Task(UUID.randomUUID(), "Tarefa", "Desc", LocalDateTime.now().plusHours(2), userId);
         LocalDateTime future = LocalDateTime.now().plusHours(1);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -122,14 +74,27 @@ public class TaskMutationTest {
     @Test
     @Tag("Mutation")
     @Tag("UnitTest")
-    void shouldThrowExceptionWhenClockOutWithoutBeingInProgress() {
-        UUID id = UUID.randomUUID();
-        Task task = new Task(id, "Tarefa", "Desc", LocalDateTime.now().plusHours(1), UUID.randomUUID());
-
-        LocalDateTime finish = LocalDateTime.now().plusHours(1);
+    void shouldThrowExceptionWhenClockInIfTaskNotPending() {
+        Task task = new Task(UUID.randomUUID(), "Titulo", "Desc", LocalDateTime.now().plusDays(1), userId);
+        task.setStatus(TaskStatus.COMPLETED);
 
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
-            task.clockOut(finish);
+            task.clockIn(LocalDateTime.now());
+        });
+
+        assertEquals("Only pending tasks can be started", exception.getMessage());
+    }
+
+    // --- Clock Out ---
+
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldThrowExceptionWhenClockOutWithoutBeingInProgress() {
+        Task task = new Task(UUID.randomUUID(), "Tarefa", "Desc", LocalDateTime.now().plusHours(1), userId);
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
+            task.clockOut(LocalDateTime.now());
         });
 
         assertEquals("Task must be in progress to be clocked out", exception.getMessage());
@@ -138,12 +103,11 @@ public class TaskMutationTest {
     @Test
     @Tag("Mutation")
     @Tag("UnitTest")
-    void shouldReturnCorrectFinishTime() {
-        UUID id = UUID.randomUUID();
-        Task task = new Task(id, "Tarefa", "Desc", LocalDateTime.now().plusHours(1), UUID.randomUUID());
-
+    void shouldReturnFinishTimeAfterClockOut() {
+        Task task = new Task(UUID.randomUUID(), "Tarefa", "Desc", LocalDateTime.now().plusHours(1), userId);
         LocalDateTime start = LocalDateTime.now().minusMinutes(30);
         LocalDateTime end = LocalDateTime.now();
+
         task.clockIn(start);
         task.clockOut(end);
 
@@ -153,24 +117,35 @@ public class TaskMutationTest {
     @Test
     @Tag("Mutation")
     @Tag("UnitTest")
-    void shouldReturnCorrectTimeSpent() {
-        UUID id = UUID.randomUUID();
-        Task task = new Task(id, "Tarefa", "Desc", LocalDateTime.now().plusHours(1), UUID.randomUUID());
-
+    void shouldCalculateCorrectTimeSpentAfterClockOut() {
+        Task task = new Task(UUID.randomUUID(), "Tarefa", "Desc", LocalDateTime.now().plusHours(1), userId);
         LocalDateTime start = LocalDateTime.now().minusMinutes(45);
         LocalDateTime end = LocalDateTime.now();
+
         task.clockIn(start);
         task.clockOut(end);
 
         assertEquals(45L, task.getTimeSpent());
     }
 
+    // --- Status e User ID ---
+
+    @Test
+    @Tag("Mutation")
+    @Tag("UnitTest")
+    void shouldThrowExceptionWhenMarkingAsCompletedIfNotInProgress() {
+        Task task = new Task(UUID.randomUUID(), "Tarefa", "Descrição", LocalDateTime.now().plusHours(1), userId);
+
+        IllegalStateException exception = assertThrows(IllegalStateException.class, task::markAsCompleted);
+
+        assertEquals("Task must be in progress to be marked as completed", exception.getMessage());
+    }
+
     @Test
     @Tag("Mutation")
     @Tag("UnitTest")
     void shouldReturnCorrectEstimatedTime() {
-        UUID id = UUID.randomUUID();
-        Task task = new Task(id, "Tarefa", "Desc", LocalDateTime.now().plusHours(2), UUID.randomUUID());
+        Task task = new Task(UUID.randomUUID(), "Tarefa", "Desc", LocalDateTime.now().plusHours(2), userId);
         task.setEstimatedTime(90L);
 
         assertEquals(90L, task.getEstimatedTime());
@@ -180,10 +155,36 @@ public class TaskMutationTest {
     @Tag("Mutation")
     @Tag("UnitTest")
     void shouldReturnCorrectUserId() {
-        UUID userId = UUID.randomUUID();
         Task task = new Task(UUID.randomUUID(), "Título", "Desc", LocalDateTime.now().plusHours(1), userId);
 
         assertEquals(userId, task.getUserId());
     }
 
+    // --- Teste auxiliar para cobertura total da classe Task.java ---
+
+    @Test // Cobertura de Setters não utilizados diretamente
+    @Tag("UnitTest")
+    @Tag("Mutation")
+    void shouldCoverAllSettersInTaskClass() {
+        Task task = new Task(
+                UUID.randomUUID(),
+                "Inicial",
+                "Descrição inicial",
+                LocalDateTime.now(),
+                UUID.randomUUID()
+        );
+
+        task.setTitle("Titulo");
+        task.setDescription("Descricao");
+        task.setDeadline(LocalDateTime.now().plusDays(1));
+        task.setStatus(TaskStatus.IN_PROGRESS); // necessário para permitir markAsCompleted()
+
+        task.markAsCompleted(); // cobre linha 88
+
+        assertAll("Setters",
+                () -> assertEquals("Titulo", task.getTitle()),
+                () -> assertEquals("Descricao", task.getDescription()),
+                () -> assertEquals(TaskStatus.COMPLETED, task.getStatus())
+        );
+    }
 }
