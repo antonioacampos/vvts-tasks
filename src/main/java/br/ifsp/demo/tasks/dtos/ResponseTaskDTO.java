@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record ResponseTaskDTO(
+        UUID id,
         String title,
         String description,
         LocalDateTime deadline,
@@ -22,6 +23,7 @@ public record ResponseTaskDTO(
 
     public ResponseTaskDTO(Task task){
         this(
+                task.getId(),
                 task.getTitle(),
                 task.getDescription(),
                 task.getDeadline(),
@@ -37,16 +39,17 @@ public record ResponseTaskDTO(
 
     public ResponseTaskDTO(TaskEntity task){
         this(
-            task.getTitle(),
-            task.getDescription(),
-            task.getDeadline(),
-            task.getStatus(),
-            task.getStartTime(),
-            task.getFinishTime(),
-            task.getTimeSpent(),
-            task.getEstimatedTime(),
-            task.getSuggestion(),
-            task.getUserId()
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getDeadline(),
+                task.getStatus(),
+                task.getStartTime(),
+                task.getFinishTime(),
+                task.getTimeSpent(),
+                task.getEstimatedTime(),
+                task.getSuggestion(),
+                task.getUserId()
         );
     }
 
