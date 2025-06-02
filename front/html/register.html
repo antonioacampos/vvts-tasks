@@ -6,6 +6,22 @@
     <title>Register</title>
 </head>
 <body>
-    
+    <div class="register-container">
+        <h2>Register</h2>
+        <form id="registerForm">
+            <div>
+                <label for="username">User:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit">Register</button>
+            <button type="button" class="login-button" onclick="redirectToLogin()">Back to Login</button>
+        </form>
+    </div>
+
+    <script src="../js/register.js"></script>
 </body>
 </html>
