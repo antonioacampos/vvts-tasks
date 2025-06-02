@@ -177,7 +177,9 @@ public class TaskMutationTest {
         task.setTitle("Titulo");
         task.setDescription("Descricao");
         task.setDeadline(LocalDateTime.now().plusDays(1));
-        task.setStatus(TaskStatus.COMPLETED);
+        task.setStatus(TaskStatus.IN_PROGRESS); // necessário para permitir markAsCompleted()
+
+        task.markAsCompleted(); // cobre linha 88
 
         assertAll("Setters",
                 () -> assertEquals("Titulo", task.getTitle()),
