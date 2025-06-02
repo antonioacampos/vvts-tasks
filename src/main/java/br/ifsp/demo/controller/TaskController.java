@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/v1/task")
 @AllArgsConstructor
 @Tag(name = "Task API")
-@CrossOrigin(origins = "*", allowedHeaders = "*")//when running in the same web
 public class TaskController {
 
     private final AuthenticationInfoService authenticationInfoService;

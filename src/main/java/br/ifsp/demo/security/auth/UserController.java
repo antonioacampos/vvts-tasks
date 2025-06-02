@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "/api/v1")
 @AllArgsConstructor
 @Tag(name = "Registration/Authentication API")
-@CrossOrigin(origins = "*", allowedHeaders = "*")//when running in the same web
 public class UserController {
 
     private final AuthenticationService authenticationService;
