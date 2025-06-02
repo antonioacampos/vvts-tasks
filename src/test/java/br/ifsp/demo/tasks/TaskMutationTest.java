@@ -159,4 +159,23 @@ public class TaskMutationTest {
 
         assertEquals(userId, task.getUserId());
     }
+
+    // --- Teste auxiliar para cobertura total da classe Task.java ---
+
+    @Test // Cobertura de Setters não utilizados diretamente
+    @Tag("UnitTest")
+    void shouldCoverAllSettersInTaskClass() {
+        Task task = new Task(UUID.randomUUID(), "", "", LocalDateTime.now(), UUID.randomUUID());
+
+        task.setTitle("Titulo");
+        task.setDescription("Descricao");
+        task.setDeadline(LocalDateTime.now().plusDays(1));
+        task.setStatus(TaskStatus.COMPLETED);
+
+        assertAll("Setters",
+                () -> assertEquals("Titulo", task.getTitle()),
+                () -> assertEquals("Descricao", task.getDescription()),
+                () -> assertEquals(TaskStatus.COMPLETED, task.getStatus())
+        );
+    }
 }
