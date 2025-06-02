@@ -25,7 +25,6 @@ document.addEventListener('DOMContentLoaded', () => {
             password: password
         };
         const jsonData = JSON.stringify(loginData);
-        console.log(jsonData);
 
         try {
             const response = await fetch('http://localhost:8080/api/v1/authenticate', { 
@@ -64,3 +63,10 @@ document.addEventListener('DOMContentLoaded', () => {
 function redirectToRegister() {
     window.location.href = './register.html'; 
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  const toRegisterBtn = document.getElementById('toRegisterBtn');
+  if (toRegisterBtn) {
+    toRegisterBtn.addEventListener('click', redirectToRegister);
+  }
+});

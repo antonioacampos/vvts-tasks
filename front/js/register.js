@@ -2,6 +2,7 @@ import { isEmail } from './utils.js';
 
 document.addEventListener('DOMContentLoaded', function() {
     const registerForm = document.getElementById('registerForm');
+    const backToLoginBtn = document.getElementById('backToLoginBtn');
     registerForm.addEventListener('submit', async function(event) {
         event.preventDefault();
 
@@ -16,8 +17,8 @@ document.addEventListener('DOMContentLoaded', function() {
         const password = passwordInput.value;
 
         if (!name) {
-            const errorDiv = document.getElementById('name-error');
-            errorDiv.textContent = 'Name is required.';
+            let nameError = document.getElementById('name-error');
+            nameError.textContent = 'Name is required.';
             return;
         }
         if (!lastName) {
@@ -48,7 +49,6 @@ document.addEventListener('DOMContentLoaded', function() {
             password: password
         };
         const jsonData = JSON.stringify(registerData);
-        console.log(jsonData);
 
         try {
             const response = await fetch('http://localhost:8080/api/v1/register', { 
@@ -76,8 +76,13 @@ document.addEventListener('DOMContentLoaded', function() {
             alert('An error occurred while trying to register.');
         }
     });
+
+    if (backToLoginBtn) {
+        backToLoginBtn.addEventListener('click', redirectToLogin);
+    }
+
+    function redirectToLogin() {
+        window.location.href = './index.html'; 
+    }
 });
 
-function redirectToLogin() {
-    window.location.href = './index.html'; 
-}
