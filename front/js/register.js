@@ -1,3 +1,5 @@
+import { isEmail } from './utils.js';
+
 document.addEventListener('DOMContentLoaded', function() {
     const registerForm = document.getElementById('registerForm');
     registerForm.addEventListener('submit', async function(event) {
@@ -28,6 +30,11 @@ document.addEventListener('DOMContentLoaded', function() {
             errorDiv.textContent = 'Email is required.';
             return;
         }
+        if (!isEmail(email)) {
+            const errorDiv = document.getElementById('email-error');
+            errorDiv.textContent = 'Invalid email format.';
+            return;
+        }
         if (!password) {
             const errorDiv = document.getElementById('password-error');
             errorDiv.textContent = 'Password is required.';
@@ -36,25 +43,29 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const registerData = {
             name: name,
-            lastName: lastName,
+            lastname: lastName,
             email: email,
             password: password
         };
+        const jsonData = JSON.stringify(registerData);
+        console.log(jsonData);
 
         try {
             const response = await fetch('http://localhost:8080/api/v1/register', { 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(registerData),
+                }, 
+                body: jsonData,
             });
 
+            
             if (!response.ok) {
-                if (response.status === 400) {
+                if (response.status === 409) {
                     const errorDiv = document.getElementById('errorMessage');
                     errorDiv.textContent = 'Username already exists.';
                 }
+                console.log(response);
                 return;
             }
 

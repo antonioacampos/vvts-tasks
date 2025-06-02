@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
             username: username,
             password: password
         };
+        const jsonData = JSON.stringify(loginData);
+        console.log(jsonData);
 
         try {
             const response = await fetch('http://localhost:8080/api/v1/authenticate', { 
@@ -31,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(loginData),
+                body: jsonData,
             });
 
             if (!response.ok) {
