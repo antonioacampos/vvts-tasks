@@ -164,8 +164,15 @@ public class TaskMutationTest {
 
     @Test // Cobertura de Setters não utilizados diretamente
     @Tag("UnitTest")
+    @Tag("Mutation")
     void shouldCoverAllSettersInTaskClass() {
-        Task task = new Task(UUID.randomUUID(), "", "", LocalDateTime.now(), UUID.randomUUID());
+        Task task = new Task(
+                UUID.randomUUID(),
+                "Inicial",
+                "Descrição inicial",
+                LocalDateTime.now(),
+                UUID.randomUUID()
+        );
 
         task.setTitle("Titulo");
         task.setDescription("Descricao");
