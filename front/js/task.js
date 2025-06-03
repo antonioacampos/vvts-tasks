@@ -1,6 +1,57 @@
 document.addEventListener('DOMContentLoaded', async function() {
     const task = await getTask();
+    if (!task) {
+        return;
+    }
 
+    const taskContainer = document.getElementById('task-container');
+    taskContainer.innerHTML = ''; 
+
+    const titleElement = document.createElement('h3');
+    titleElement.textContent = task.title;
+    taskContainer.appendChild(titleElement);
+
+    const descriptionElement = document.createElement('p');
+    descriptionElement.textContent = task.description ;
+    taskContainer.appendChild(descriptionElement);
+
+    const statusElement = document.createElement('p');
+    statusElement.textContent = `Status: ${task.status}`;
+    taskContainer.appendChild(statusElement);
+
+    const deadlineElement = document.createElement('p');
+    deadlineElement.textContent = `Deadline: ${new Date(task.deadline).toLocaleDateString()}`;
+    taskContainer.appendChild(deadlineElement);
+
+    if(task.estimatedTime) {
+        const estimatedTimeElement = document.createElement('p');
+        estimatedTimeElement.textContent = `Estimated Time: ${task.estimatedTime}`;
+        taskContainer.appendChild(estimatedTimeElement);
+    }
+
+    if(task.timeSpent) {
+        const timeSpentElement = document.createElement('p');
+        timeSpentElement.textContent = `Time Spent: ${task.timeSpent}`;
+        taskContainer.appendChild(timeSpentElement);
+    }
+
+    if(task.startTime) {
+        const startTimeElement = document.createElement('p');
+        startTimeElement.textContent = `Start Time: ${new Date(task.startTime).toLocaleString()}`;
+        taskContainer.appendChild(startTimeElement);
+    }
+
+    if(task.finishTime) {
+        const finishTimeElement = document.createElement('p');
+        finishTimeElement.textContent = `Finish Time: ${task.finishTime ? new Date(task.finishTime).toLocaleString() : 'No finish time set'}`;
+        taskContainer.appendChild(finishTimeElement);
+    }
+
+    if(task.sugestion) {
+        const sugestionElement = document.createElement('p');
+        sugestionElement.textContent = `Suggestion: ${task.sugestion || 'No suggestion provided'}`;
+        taskContainer.appendChild(sugestionElement);
+    }
     
 });
 
