@@ -23,11 +23,11 @@ This README explains how to run this static frontend using Docker.
 3.  **Run the Docker container:**
     To run the frontend and make it accessible through a port on your local machine, use the following command:
     ```bash
-    docker run -p 8080:80 frontend
+    docker run -p 8081:80 frontend
     ```
     
 4.  **Access the Frontend in your browser:**
     Open your web browser and go to the following address:
     ```
-    http://localhost:8080
+    http://localhost:8081
     ```
