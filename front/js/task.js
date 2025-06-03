@@ -6,7 +6,15 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     displayTask(task);
 
+    const editTaskButton = document.getElementById('edit-task-btn');
+    editTaskButton.addEventListener('click', function() {
+        sessionStorage.setItem('idTask', task.id);
+        window.location.href = './editTask.html';
+    });
+
+    markAsCompleteButton();
     clockinButton();
+    clockoutButton();
     deleteButton();
 
 });
@@ -107,6 +115,51 @@ function displayTask(task) {
     }
 }
 
+async function markAsCompleteButton() {
+
+    const markAsCompleteButton = document.getElementById('mark-complete-btn');
+    markAsCompleteButton.addEventListener('click', async function() {
+        const token = localStorage.getItem('tokenTaskVVTS');
+        if (!token) {
+            window.location.href = './index.html'; 
+            return;
+        }
+        
+        const id = sessionStorage.getItem('idTask');
+        if (!id) {
+            window.location.href = './tasklist.html'; 
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/v1/task/mark-completed/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (response.ok) {
+                alert('Mark as completed successful.');
+                window.location.reload();
+            } else {
+                if (response.status === 401) {
+                    window.location.href = './index.html'; 
+                } else if (response.status === 403) {
+                    const error = document.getElementById('error-message');
+                    error.textContent = 'Only In progress tasks can be marked as completed.';
+                }
+            }
+        } catch (error) {
+            console.error('Error marking as completed:', error);
+            alert('Error marking as completed. Please try again later.');
+        }
+    });
+
+}
+
+
 async function clockinButton() {
     const clockinButton = document.getElementById('clock-in-btn');
     clockinButton.addEventListener('click', async function() {
@@ -137,9 +190,9 @@ async function clockinButton() {
             } else {
                 if (response.status === 401) {
                     window.location.href = './index.html'; 
-                } else {
-                    console.error('Error clocking in:', response.statusText);
-                    alert('Error clocking in. Please try again later.');
+                } else if (response.status === 403) {
+                    const error = document.getElementById('error-message');
+                    error.textContent = 'Only Pending tasks can be clocked in.';
                 }
             }
         } catch (error) {
@@ -147,6 +200,51 @@ async function clockinButton() {
             alert('Error clocking in. Please try again later.');
         }
     });
+
+}
+
+async function clockoutButton() {
+
+    const clockinButton = document.getElementById('clock-out-btn');
+    clockinButton.addEventListener('click', async function() {
+        const token = localStorage.getItem('tokenTaskVVTS');
+        if (!token) {
+            window.location.href = './index.html'; 
+            return;
+        }
+        
+        const id = sessionStorage.getItem('idTask');
+        if (!id) {
+            window.location.href = './tasklist.html'; 
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/v1/task/clock-out/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (response.ok) {
+                alert('Clock-out successful.');
+                window.location.reload();
+            } else {
+                if (response.status === 401) {
+                    window.location.href = './index.html'; 
+                } else if (response.status === 403) {
+                    const error = document.getElementById('error-message');
+                    error.textContent = 'Only In progress tasks can be clocked in.';
+                }
+            }
+        } catch (error) {
+            console.error('Error clocking out:', error);
+            alert('Error clocking out. Please try again later.');
+        }
+    });
+
 
 }
 

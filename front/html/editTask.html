@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit-task</title>
+</head>
+<body>
+    <div id="create-task-container">
+    
+        <h2>Edit Task</h2>
+
+        <form id="task-form">
+            <div>
+                <label for="task-title">Task Name:</label>
+                <input type="text" id="task-title" name="task-title" required>
+            </div>
+
+            <div>
+                <label for="task-description">Description:</label>
+                <input type="text" id="task-description" name="task-description"></input>
+            </div>
+
+            <div>
+                <label for="task-deadline">Deadline:</label>
+                <input type="datetime-local" id="task-deadline" name="task-deadline">
+            </div>
+
+            <button type="submit" id="create-task-btn">Edit Task</button>
+        </form>
+
+        <div id="error-message" style="color: red;"></div>
+    </div>
+
+    <script src="../js/editTask.js" type="module"></script>
+</body>
+</html>
