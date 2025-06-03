@@ -4,6 +4,57 @@ document.addEventListener('DOMContentLoaded', async function() {
         return;
     }
 
+    displayTask(task);
+    deleteButton();
+
+});
+
+async function getTask() {
+    const token = localStorage.getItem('tokenTaskVVTS');
+    if (!token) {
+        window.location.href = './index.html'; 
+        return;
+    }
+    const id = sessionStorage.getItem('idTask');
+
+    if (!id) {
+        window.location.href = './tasklist.html'; 
+        return;
+    }
+    
+    try {
+        const response = await fetch(`http://localhost:8080/api/v1/task/get/${id}`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            }
+        });
+
+        if (!response.ok) {
+            if (response.status === 401) {
+                window.location.href = './index.html'; 
+                return;
+            } else {
+                console.error('Error fetching task:', response.statusText);
+                alert('Error fetching task. Please try again later.');
+                return;
+            }
+        }
+
+        const taskData = await response.json();
+
+        return taskData;
+
+    } catch (error) {
+        console.error('Error fetching task:', error);
+        alert('Error fetching task. Please try again later.');
+        return;
+    }
+
+}
+
+function displayTask(task) {
     const taskContainer = document.getElementById('task-container');
     taskContainer.innerHTML = ''; 
 
@@ -52,50 +103,46 @@ document.addEventListener('DOMContentLoaded', async function() {
         sugestionElement.textContent = `Suggestion: ${task.sugestion || 'No suggestion provided'}`;
         taskContainer.appendChild(sugestionElement);
     }
-    
-});
+}
 
-async function getTask() {
-    const token = localStorage.getItem('tokenTaskVVTS');
-    if (!token) {
-        window.location.href = './index.html'; 
-        return;
-    }
-    const id = sessionStorage.getItem('idTask');
-
-    if (!id) {
-        window.location.href = './tasklist.html'; 
-        return;
-    }
-    
-    try {
-        const response = await fetch(`http://localhost:8080/api/v1/task/get/${id}`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            }
-        });
-
-        if (!response.ok) {
-            if (response.status === 401) {
-                window.location.href = './index.html'; 
-                return;
-            } else {
-                console.error('Error fetching task:', response.statusText);
-                alert('Error fetching task. Please try again later.');
-                return;
-            }
+async function deleteButton() {
+    const deleteButton = document.getElementById('delete-task-btn');
+    deleteButton.addEventListener('click', async function() {
+        const token = localStorage.getItem('tokenTaskVVTS');
+        if (!token) {
+            window.location.href = './index.html'; 
+            return;
+        }
+        
+        const id = sessionStorage.getItem('idTask');
+        if (!id) {
+            window.location.href = './tasklist.html'; 
+            return;
         }
 
-        const taskData = await response.json();
+        try {
+            const response = await fetch(`http://localhost:8080/api/v1/task/delete/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
 
-        return taskData;
-
-    } catch (error) {
-        console.error('Error fetching task:', error);
-        alert('Error fetching task. Please try again later.');
-        return;
-    }
-
+            if (response.ok) {
+                alert('Task deleted successfully.');
+                window.location.href = './tasklist.html';
+            } else {
+                if (response.status === 401) {
+                    window.location.href = './index.html'; 
+                } else {
+                    console.error('Error deleting task:', response.statusText);
+                    alert('Error deleting task. Please try again later.');
+                }
+            }
+        } catch (error) {
+            console.error('Error deleting task:', error);
+            alert('Error deleting task. Please try again later.');
+        }
+    });
 }
