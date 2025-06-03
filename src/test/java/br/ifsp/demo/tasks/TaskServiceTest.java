@@ -477,4 +477,20 @@ class TaskServiceTest {
         assertThat(clockedOutTask.getTimeSpent()).isGreaterThan(0L);
     }
 
+    @Test
+    @Tag("UnitTest")
+    @Tag("Structural")
+    @Description("Should return message when task completed and clockout given")
+    void shouldReturnMessageWhenTaskCompletedAndClockoutGiven(){
+        TaskService taskService = new TaskService(taskServiceDB);
+        LocalDateTime deadline = LocalDateTime.now().plusDays(7);
+        Task task = taskService.createTask("Task", "Description", deadline, 123, userId1);
+
+        taskService.clockIn(task.getId(), LocalDateTime.now(), userId1);
+        taskService.clockOut(task.getId(), LocalDateTime.now(), userId1);
+
+        String message = taskService.checkForClockOutForgottenInCompletedTask(task.getId(), userId1);
+
+        assertThat(message).isEqualTo("Clock-out is no longer necessary as the task is already completed.");
+    }
 }
