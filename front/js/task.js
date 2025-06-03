@@ -5,6 +5,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     displayTask(task);
+
+    clockinButton();
     deleteButton();
 
 });
@@ -105,6 +107,50 @@ function displayTask(task) {
     }
 }
 
+async function clockinButton() {
+    const clockinButton = document.getElementById('clock-in-btn');
+    clockinButton.addEventListener('click', async function() {
+        const token = localStorage.getItem('tokenTaskVVTS');
+        if (!token) {
+            window.location.href = './index.html'; 
+            return;
+        }
+        
+        const id = sessionStorage.getItem('idTask');
+        if (!id) {
+            window.location.href = './tasklist.html'; 
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/v1/task/clock-in/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            if (response.ok) {
+                alert('Clock-in successful.');
+                window.location.reload();
+            } else {
+                if (response.status === 401) {
+                    window.location.href = './index.html'; 
+                } else {
+                    console.error('Error clocking in:', response.statusText);
+                    alert('Error clocking in. Please try again later.');
+                }
+            }
+        } catch (error) {
+            console.error('Error clocking in:', error);
+            alert('Error clocking in. Please try again later.');
+        }
+    });
+
+}
+
+
 async function deleteButton() {
     const deleteButton = document.getElementById('delete-task-btn');
     deleteButton.addEventListener('click', async function() {
@@ -136,8 +182,8 @@ async function deleteButton() {
                 if (response.status === 401) {
                     window.location.href = './index.html'; 
                 } else {
-                    console.error('Error deleting task:', response.statusText);
-                    alert('Error deleting task. Please try again later.');
+                    const error = document.getElementById('error-message');
+                    error.textContent = 'Error deleting task. Please try again later.';
                 }
             }
         } catch (error) {
