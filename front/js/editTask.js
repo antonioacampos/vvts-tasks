@@ -6,6 +6,8 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     displayTask(task);
 
+    console.log(task);
+
     editTask();
     
 });

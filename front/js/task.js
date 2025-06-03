@@ -1,3 +1,5 @@
+import { convertDate } from './utils.js';
+
 document.addEventListener('DOMContentLoaded', async function() {
     const task = await getTask();
     if (!task) {
@@ -81,7 +83,7 @@ function displayTask(task) {
     taskContainer.appendChild(statusElement);
 
     const deadlineElement = document.createElement('p');
-    deadlineElement.textContent = `Deadline: ${new Date(task.deadline).toLocaleDateString()}`;
+    deadlineElement.textContent = `Deadline: ${convertDate(new Date(task.deadline))}`;
     taskContainer.appendChild(deadlineElement);
 
     if(task.estimatedTime) {

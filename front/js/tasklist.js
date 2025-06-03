@@ -1,3 +1,5 @@
+import { convertDate } from "./utils.js";
+
 document.addEventListener('DOMContentLoaded', function() {
 
     addTaskButton();
@@ -74,7 +76,7 @@ async function loadTasks(){
             status.className = 'task-status';
 
             const deadline = document.createElement('p');
-            deadline.textContent = `Deadline: ${element.deadline ? new Date(element.deadline).toLocaleDateString() : 'No deadline set'}`;
+            deadline.textContent = `Deadline: ${convertDate(new Date(element.deadline))}`;
             deadline.className = 'task-deadline';
             
             newTask.appendChild(title);
