@@ -1,8 +1,29 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+    addTaskButton();
+
     loadTasks();
 
 });
+
+async function addTaskButton() {
+
+    const addTaskButton = document.getElementById('add-task-btn');
+
+    addTaskButton.addEventListener('click', function() {
+
+        const token = localStorage.getItem('tokenTaskVVTS');
+
+        if (!token) {
+            window.location.href = './index.html'; 
+            return;
+        }
+
+        window.location.href = './createTask.html';
+
+    });
+
+}
 
 async function loadTasks(){
 
